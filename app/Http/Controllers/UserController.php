@@ -12,9 +12,10 @@ class UserController extends Controller
     public function register(Request $request){
        
         $formData = $request->validate([
-            'name' => "required",
+            'lname' => "required",
+            'fname' => "required",
             'email' => "required|email",
-            'password' => "required"
+            'password' => "required|confirmed"
 
         ]);
         if(User::where('email', $formData["email"])->exists()){
@@ -23,7 +24,7 @@ class UserController extends Controller
 
         $user = User::create($formData);
 
-        $token = $user->createToken($user->name);
+        $token = $user->createToken($user->fname);
 
         return [
             'message' => "Registered succesfully",
