@@ -12,8 +12,8 @@ class UserController extends Controller
     public function register(Request $request){
        
         $formData = $request->validate([
-            'lname' => "required",
-            'fname' => "required",
+            'lastName' => "required",
+            'firstName' => "required",
             'email' => "required|email",
             'password' => "required|confirmed"
 
