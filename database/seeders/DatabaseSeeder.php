@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             EventSeeder::class,
             EventMediaSeeder::class,
             ReviewSeeder::class,
+            TestimonialSeeder::class,
         ]);
     }
 }

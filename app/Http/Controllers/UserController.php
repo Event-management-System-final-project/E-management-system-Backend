@@ -17,6 +17,7 @@ class UserController extends Controller
             'email' => "required|email",
             'password' => "required|confirmed"
 
+
         ]);
         if(User::where('email', $formData["email"])->exists()){
             return "user already registered";
@@ -24,7 +25,7 @@ class UserController extends Controller
 
         $user = User::create($formData);
 
-        $token = $user->createToken($user->fname);
+        $token = $user->createToken($user->firstName);
 
         return [
             'message' => "Registered succesfully",

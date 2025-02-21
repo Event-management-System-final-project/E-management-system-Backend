@@ -22,13 +22,7 @@ return new class extends Migration
             
         });
 
-        Schema::create('event_media', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
-            $table->string('media_type');
-            $table->string('media_url');
-            $table->timestamps();
-        });
+       
     }
 
     /**

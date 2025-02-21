@@ -23,9 +23,9 @@ class EventFactory extends Factory
             'description' => fake()->paragraph(),
             'date' => fake()->date(),
             'time' => fake()->time(),
-            'event_type' => fake()->word(),
-            'expected_attendees' => fake()->numberBetween(10, 500),
-            'venue' => fake()->address(),
+            'category' => fake()->word(),
+            'attendees' => fake()->numberBetween(10, 500),
+            'location' => fake()->address(),
             'price' => fake()->randomFloat(2, 0, 1000)
         ];
     }

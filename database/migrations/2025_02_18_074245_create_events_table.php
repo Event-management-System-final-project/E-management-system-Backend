@@ -17,15 +17,23 @@ return new class extends Migration
             $table->foreignId("user_id")->references("id")->on("users")->onDelete("cascade");
             $table->string("title");
             $table->text("description");
-            $table->string("event_type");
+            $table->string("category");
             $table->date("date");
             $table->time("time");
-            $table->string("venue");
+            $table->string("location");
             $table->decimal("price", 8, 2);
-            $table->integer("expected_attendees");
+            $table->integer("attendees");
             $table->string("status")->nullable();
             $table->timestamps();
           
+        });
+
+        Schema::create('event_media', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->string('media_type');
+            $table->string('media_url');
+            $table->timestamps();
         });
     }
 

@@ -13,11 +13,11 @@ class Event extends Model
         "user_id",
         "title",
         "description",
-        "event_type",
+        "category",
         "date",
         "time",
-        "venue",
-        "expected_attendees",
+        "location",
+        "attendees",
         "price",
         "status"
 

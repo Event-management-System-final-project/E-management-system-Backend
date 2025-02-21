@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\eventMedia;
-use App\Models\feedbackAndRating;
+use App\Models\Testimonial;
 
 class EventController extends Controller
 {
@@ -27,7 +27,8 @@ class EventController extends Controller
 
     function feedbackShow(){
 
-        $feedbacks = feedbackAndRating::take(10)->get();
+        $feedbacks = Testimonial::take(10)->get();
+        // return $feedbacks;
 
         foreach($feedbacks as $feedback){
             $user = User::where('id', $feedback->user_id)->first();

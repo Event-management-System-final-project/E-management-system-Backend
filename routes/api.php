@@ -15,5 +15,5 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::get("event/show", [EventController::class, 'eventShow']);
-Route::get("feedback/show", [EventController::class, 'feedbackShow']);
+Route::get("testimonial/show", [EventController::class, 'feedbackShow']);
 
