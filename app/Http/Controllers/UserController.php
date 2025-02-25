@@ -15,11 +15,12 @@ class UserController extends Controller
             'lastName' => "required",
             'firstName' => "required",
             'email' => "required|email",
-            'password' => "required|confirmed"
-
+            'password' => "required|confirmed",
+            'role' => "required"
 
         ]);
-        if(User::where('email', $formData["email"])->exists()){
+
+        if(User::where('email', $formData['email'])->exists()){
             return "user already registered";
         }
 
