@@ -53,7 +53,7 @@ class UserController extends Controller
     }
 
     return [
-        'token' => $user->createToken($user->name)->plainTextToken
+        'token' => $user->createToken($user->firstName)->plainTextToken
     ];
 
     }
