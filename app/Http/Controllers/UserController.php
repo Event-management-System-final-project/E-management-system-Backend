@@ -38,7 +38,7 @@ class UserController extends Controller
 
     public function login(Request $request){
         $request->validate([
-            'email' => "required",
+            'email' => "required|email",
             'password' => "required"
 
         ]);
@@ -49,12 +49,14 @@ class UserController extends Controller
     if (! $user || ! Hash::check($request->password, $user->password)) {
         throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.'],
-        ]);
+        ])->status(401);
     }
 
-    return [
-        'token' => $user->createToken($user->firstName)->plainTextToken
-    ];
+    return response()->json(
+        [
+            'token' => $user->createToken($user->firstName)->plainTextToken
+        ], 200
+    );
 
     }
 
