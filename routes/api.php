@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\TestimonialController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -15,5 +16,5 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::get("event/show", [EventController::class, 'eventShow']);
-Route::get("testimonial/show", [EventController::class, 'feedbackShow']);
+Route::get("testimonial/show", [TestimonialController::class, 'userFeedback']);
 

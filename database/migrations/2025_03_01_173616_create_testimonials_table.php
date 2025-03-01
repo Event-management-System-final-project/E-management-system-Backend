@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('testimonials', function (Blueprint $table) {
             $table->id();
             $table->foreignId("user_id")->references("id")->on("users")->onDelete("cascade");
-            $table->string("rating");
-            $table->text("content");
+            $table->string('position');
+            $table->string('company');
+            $table->text('content');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('testiomonials');
+        Schema::dropIfExists('testimonials');
     }
 };

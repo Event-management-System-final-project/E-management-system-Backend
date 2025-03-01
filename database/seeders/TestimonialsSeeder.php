@@ -4,15 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Testimonial;
+use App\Models\Testimonials;
 
-class TestimonialSeeder extends Seeder
+class TestimonialsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Testimonial::factory(10)->create();
+        Testimonials::factory(10)->create();
     }
 }

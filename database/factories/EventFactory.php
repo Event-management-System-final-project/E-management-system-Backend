@@ -26,7 +26,8 @@ class EventFactory extends Factory
             'category' => fake()->word(),
             'attendees' => fake()->numberBetween(10, 500),
             'location' => fake()->address(),
-            'price' => fake()->randomFloat(2, 0, 1000)
+            'price' => fake()->randomFloat(2, 0, 1000),
+            'status' => fake()->randomElement(['upcoming', 'ongoing', 'past']),
         ];
     }
 }

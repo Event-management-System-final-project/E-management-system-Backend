@@ -26,6 +26,7 @@ class UserFactory extends Factory
         return [
             'firstName' => fake()->name(),
             'lastName' => fake()->name(),
+            'role' => fake()->randomElement(['organizer', 'user']),
             'email' => fake()->unique()->safeEmail(),
             'image' => $this->faker->imageUrl(),
             'email_verified_at' => now(),

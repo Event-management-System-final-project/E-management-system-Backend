@@ -11,10 +11,10 @@ use App\Models\Testimonial;
 class EventController extends Controller
 {
     function eventShow(){
-        $events = Event::take(10)->get();
+        $events = Event::take(10)->get()->makeHidden(['created_at', 'updated_at']);
 
         foreach($events as $event){
-            $eventMedia = EventMedia::where("event_id", $event->id)->get();
+            $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
             $allEventMedia[$event->id] = $eventMedia;
         }
 
