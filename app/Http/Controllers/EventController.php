@@ -10,6 +10,7 @@ use App\Models\Testimonial;
 
 class EventController extends Controller
 {
+    // SHOWING LIST OF EVENTS
     function eventShow(){
         $events = Event::take(10)->get()->makeHidden(['created_at', 'updated_at']);
 
@@ -24,6 +25,32 @@ class EventController extends Controller
         ];
 
     }
+
+    // SEARCHING FOR EVENTS
+    public function eventSearch($keyword){
+        $events = Event::where('title', 'like', '%'.$keyword.'%')
+                         ->orWhere('description', 'like', '%'.$keyword.'%') 
+                         ->orWhere('location', 'like', '%'.$keyword.'%')
+                         ->orWhere('category', 'like', '%'.$keyword.'%')
+                         ->orWhere('date', 'like', '%'.$keyword.'%')
+                         ->orWhere('time', 'like', '%'.$keyword.'%')
+                         ->orWhere('price', 'like', '%'.$keyword.'%')
+                         ->orWhere('status', 'like', '%'.$keyword.'%')
+                        ->get()->makeHidden(['created_at', 'updated_at']);
+
+        foreach($events as $event){
+            $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
+            $allEventMedia[$event->id] = $eventMedia;
+        }
+
+        return [
+            "events" => $events,
+            "eventMedia" => $allEventMedia
+        ];
+
+    }
+
+    // SHOWING USER FEEDBACK FOR EVENTS
 
     function feedbackShow(){
 

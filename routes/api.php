@@ -18,3 +18,6 @@ Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanc
 Route::get("event/show", [EventController::class, 'eventShow']);
 Route::get("testimonial/show", [TestimonialController::class, 'userFeedback']);
 
+// Event search and filter
+Route::get("event/search/{keyword}", [EventController::class, 'eventSearch']);
+
