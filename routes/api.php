@@ -17,7 +17,7 @@ Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanc
 
 Route::get("events", [EventController::class, 'eventShow']);
 Route::get("events/featured", [EventController::class, 'featuredEvents']);
-Route::get("testimonial/show", [TestimonialController::class, 'userFeedback']);
+Route::get("testimonial", [TestimonialController::class, 'userFeedback']);
 
 // test file upload
 Route::post('/upload', [EventController::class, 'uploadFile']);
