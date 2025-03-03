@@ -27,6 +27,7 @@ class EventFactory extends Factory
             'attendees' => fake()->numberBetween(10, 500),
             'location' => fake()->address(),
             'price' => fake()->randomFloat(2, 0, 1000),
+            'featured'=> fake()->boolean(),
             'status' => fake()->randomElement(['upcoming', 'ongoing', 'past']),
         ];
     }

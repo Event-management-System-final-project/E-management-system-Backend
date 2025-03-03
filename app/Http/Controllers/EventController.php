@@ -12,7 +12,37 @@ class EventController extends Controller
 {
     // SHOWING LIST OF EVENTS
     function eventShow(){
-        $events = Event::take(10)->get()->makeHidden(['created_at', 'updated_at']);
+        $events = Event::orderBy("created_at", "desc")->take(4)->get()->makeHidden(['created_at', 'updated_at']);
+
+        foreach($events as $event){
+            $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
+            $allEventMedia[$event->id] = $eventMedia;
+        }
+
+        return [
+            "events" => $events,
+            "eventMedia" => $allEventMedia
+        ];
+
+    }
+
+    function uploadFile(Request $request){
+        $request->validate([
+            'file' => 'required|file'
+        ])
+
+        $file = $request->file('file');
+        $filePath = $file->storeAs('uploads', $fileName, 'public');
+
+        return [
+            "file" => $file,
+            "filePath" => $filePath
+        ]
+    }
+
+    // FEATURED EVENT DISPLAY
+    function featuredEvents(){
+        $events = Event::where("featured", true)->paginate(4)->makeHidden(['created_at', 'updated_at']);
 
         foreach($events as $event){
             $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
@@ -49,6 +79,28 @@ class EventController extends Controller
         ];
 
     }
+
+
+
+
+    // FILTERING EVENTS BY CATEGORY, DATE, PRICE
+    public function filterEvents(Request $request)
+    {
+        $query = Event::query();
+        $events = $query->when($request->date, function($query) use ($request){
+                                $query->where('date', $request->date);
+                            })
+                            ->when($request->price, function($query) use ($request){
+                                $query->where('price', $request->price);
+                            })->when($request->category, function($query) use ($request){
+                                $query->where('category', $request->category);
+                            })->get();
+
+        return response()->json($events);
+    }
+
+
+
 
     // SHOWING USER FEEDBACK FOR EVENTS
 

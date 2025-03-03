@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string("location");
             $table->decimal("price", 8, 2);
             $table->integer("attendees");
+            $table->boolean("featured")->default(false);
             $table->string("status")->nullable();
             $table->timestamps();
           

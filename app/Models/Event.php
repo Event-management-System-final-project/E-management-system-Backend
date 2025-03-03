@@ -19,7 +19,8 @@ class Event extends Model
         "location",
         "attendees",
         "price",
-        "status"
+        "status",
+        "feutured"
 
     ];
 }
