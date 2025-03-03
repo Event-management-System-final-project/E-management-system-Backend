@@ -10,7 +10,7 @@ class TestimonialController extends Controller
 {
     function userFeedback(){
 
-        $feedbacks = Testimonials::take(10)->get()->makeHidden(['created_at', 'updated_at']);;
+        $feedbacks = Testimonials::orderBy("created_at", "desc")->take(3)->get()->makeHidden(['created_at', 'updated_at']);;
         // return $feedbacks;
 
         foreach($feedbacks as $feedback){

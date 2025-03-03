@@ -29,15 +29,15 @@ class EventController extends Controller
     function uploadFile(Request $request){
         $request->validate([
             'file' => 'required|file'
-        ])
+        ]);
 
         $file = $request->file('file');
-        $filePath = $file->storeAs('uploads', $fileName, 'public');
+        $filePath = $file->storeAs('uploads', 'public');
 
         return [
             "file" => $file,
             "filePath" => $filePath
-        ]
+        ];
     }
 
     // FEATURED EVENT DISPLAY
