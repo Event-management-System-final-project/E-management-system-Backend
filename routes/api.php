@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\PasswordReset;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -31,11 +32,7 @@ Route::get('/events/filter', [EventController::class, 'filterEvents']);
 Route::get("/numbers", [EventController::class, 'eventNumbers']);
 
 
-Route::get('/send-test-email', function () {
-    Mail::raw('This is a test email', function ($message) {
-        $message->to('recipient@example.com')
-                ->subject('Test Email');
-    });
-
-    return 'Test email sent!';
-});
+Route::post('/send/email', [PasswordReset::class, 'passwordReset']);
+Route::get('/send', function (){
+    return view('email');
+})->name('password.reset');
