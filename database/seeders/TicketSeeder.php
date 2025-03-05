@@ -4,22 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Event;
-use App\Models\Organizer;
+use App\Models\Ticket;
 
-class EventSeeder extends Seeder
+class TicketSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-     
-        // Create events organized by users
-        Event::factory()->count(5)->create();
-
-       
-
-       
+        Ticket::factory(10)->create();
     }
 }

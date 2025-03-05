@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('organizers', function (Blueprint $table) {
             $table->id();
-            // $table->foreign("userId")->references("id")->on("users")->onDelete("cascade");
-            // $table->string("organization_name");
-            // $table->string("business_type");
-            // $table->string("address");
-            // $table->string("event_categories");
-            // $table->string("years_of_experience");
-            // $table->string("portfolio");
-            // $table->string("bank_account_details");
-            // $table->string("verification_documents");
+            $table->foreignId("user_id")->references("id")->on("users")->onDelete("cascade");
+            $table->string("organization_name");
+            $table->string("business_type");
+            $table->string("address");
+            $table->string("event_categories");
+            $table->string("years_of_experience");
+            $table->string("portfolio");
+            $table->string("bank_account_details");
+            $table->string("verification_documents");
             $table->timestamps();
 
         

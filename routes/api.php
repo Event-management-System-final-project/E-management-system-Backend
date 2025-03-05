@@ -26,3 +26,16 @@ Route::post('/upload', [EventController::class, 'uploadFile']);
 Route::get("event/search/{keyword}", [EventController::class, 'eventSearch']);
 Route::get('/events/filter', [EventController::class, 'filterEvents']);
 
+
+//Alaytics
+Route::get("/numbers", [EventController::class, 'eventNumbers']);
+
+
+Route::get('/send-test-email', function () {
+    Mail::raw('This is a test email', function ($message) {
+        $message->to('recipient@example.com')
+                ->subject('Test Email');
+    });
+
+    return 'Test email sent!';
+});

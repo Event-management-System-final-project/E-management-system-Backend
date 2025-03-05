@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Event;
 use App\Models\eventMedia;
 use App\Models\Testimonial;
+use App\Models\Organizer;
+use App\Models\Ticket;
 
 class EventController extends Controller
 {
@@ -119,5 +121,21 @@ class EventController extends Controller
             "feedback" => $feedbacks
         ];
 
+    }
+
+
+    // SHOWING ANLAYTICS FOR EVENTS
+    public function eventNumbers(){
+        $numberOfEvents = Event::count();
+        $numberOfOrganizers = Organizer::count();
+        $ticketsSold = Ticket::count();
+
+        return response()->json([
+            'events' => $numberOfEvents,
+            'organizers' => $numberOfOrganizers,
+            'tickets' => $ticketsSold,
+            'attendees' => $ticketsSold
+        ]);
+        
     }
 }
