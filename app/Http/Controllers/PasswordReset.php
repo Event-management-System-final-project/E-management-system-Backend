@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class PasswordReset extends Controller
 {
-    public function passwordReset(Request $request){
+    public function sendEmail(Request $request){
         $request->validate([
             'email' => 'required|email|exists:users,email'
         ]);
@@ -33,6 +33,38 @@ class PasswordReset extends Controller
 
     }
 
+    public function resetPassword(Request $request){
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'token' => 'required',
+            'password' => 'required|min:6|confirmed'
+        ]);
 
-    
+        $token = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+
+        if(!$token){
+            return response()->json([
+                'message' => 'invalid token'
+            ], 400);
+        }
+
+        if($token->token !== $request->token){
+            return response()->json([
+                'message' => 'invalid token'
+            ], 400);
+        }
+
+        DB::table('users')->where('email', $request->email)->update([
+            'password' => bcrypt($request->password)
+        ]);
+
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return response()->json([
+            'message' => 'password reset successful'
+        ]);
+    }
+
+
+
 }

@@ -32,7 +32,5 @@ Route::get('/events/filter', [EventController::class, 'filterEvents']);
 Route::get("/numbers", [EventController::class, 'eventNumbers']);
 
 
-Route::post('/send/email', [PasswordReset::class, 'passwordReset']);
-Route::get('/send', function (){
-    return view('email');
-})->name('password.reset');
+Route::post('/send/email', [PasswordReset::class, 'sendEmail']);
+Route::post('/password/reset', [PasswordReset::class, 'resetPassword']);
