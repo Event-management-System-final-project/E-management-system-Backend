@@ -28,11 +28,10 @@ class UserController extends Controller
 
         $user = User::create($formData);
 
-        $token = $user->createToken($user->firstName);
+       
 
         return [
             'message' => "Registered succesfully",
-            'token' => $token->plainTextToken,
             'user' => $user
         ];
 
@@ -58,7 +57,7 @@ class UserController extends Controller
     return response()->json(
         [
             'token' =>  $user->createToken($user->firstName)->plainTextToken,
-            'user' => $user->role
+            'user' => $user
         ], 200
     );
 
