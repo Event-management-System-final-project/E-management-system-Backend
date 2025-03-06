@@ -138,4 +138,30 @@ class EventController extends Controller
         ]);
         
     }
+
+
+    // SHOWING DETAILS OF AN EVENT
+    public function eventDetails(Request $request){
+        $event = Event::where('id', $request->id)->first();
+        $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
+        $organizer = Organizer::where('id', $event->organizer_id)->first()->makeHidden(['created_at', 'updated_at']);
+        $tickets = Ticket::where('event_id', $event->id)->get();
+
+        //    // Convert $event to a collection
+        //    $eventCollection = collect($event);
+
+        //    // Convert $eventMedia to a collection
+        //    $eventMediaCollection = collect($eventMedia);
+   
+        //    $merged = $eventCollection->merge($eventMediaCollection);
+
+        return [
+            "event" => $event,
+            "eventMedia" => $eventMedia,
+            "organizer" => $organizer,
+            "tickets" => $tickets
+            // "eventDetails" => $merged
+        ];
+
+    }
 }

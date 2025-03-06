@@ -33,6 +33,7 @@ class PasswordReset extends Controller
 
     }
 
+    
     public function resetPassword(Request $request){
         $request->validate([
             'email' => 'required|email|exists:users,email',

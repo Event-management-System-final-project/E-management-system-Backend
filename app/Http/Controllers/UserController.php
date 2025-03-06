@@ -6,9 +6,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
+    // FUNTION TO REGISTER A USER
     public function register(Request $request){
        
         $formData = $request->validate([
@@ -36,6 +38,7 @@ class UserController extends Controller
 
     }
 
+    // FUNCTION TO LOGIN A USER
     public function login(Request $request){
         $request->validate([
             'email' => "required|email",
@@ -54,13 +57,18 @@ class UserController extends Controller
 
     return response()->json(
         [
-            'token' => $user->createToken($user->firstName)->plainTextToken,
+            'token' =>  $user->createToken($user->firstName)->plainTextToken,
             'user' => $user->role
         ], 200
     );
 
+
+
     }
 
+    
+
+// FUNCTION TO LOGOUT A USER
     public function logout(Request $request){
         $request->user()->tokens()->delete();
 

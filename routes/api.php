@@ -26,6 +26,7 @@ Route::post('/upload', [EventController::class, 'uploadFile']);
 // Event search and filter
 Route::get("event/search/{keyword}", [EventController::class, 'eventSearch']);
 Route::get('/events/filter', [EventController::class, 'filterEvents']);
+Route::get('events/{id}', [EventController::class, 'eventDetails']);
 
 
 //Alaytics
