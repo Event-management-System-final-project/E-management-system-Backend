@@ -20,6 +20,11 @@ Route::get("events", [EventController::class, 'eventShow']);
 Route::get("events/featured", [EventController::class, 'featuredEvents']);
 Route::get("testimonial", [TestimonialController::class, 'userFeedback']);
 
+
+// CREATE EVENT
+Route::post("events/create", [EventController::class, 'createEvent']);
+
+
 // test file upload
 Route::post('/upload', [EventController::class, 'uploadFile']);
 

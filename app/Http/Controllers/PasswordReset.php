@@ -22,7 +22,7 @@ class PasswordReset extends Controller
             'created_at' => now()
         ]);
 
-        Mail::send('mail', ['token' => $token], function($message) use ($request){
+        Mail::send('mail', ['token' => $token, 'email' => $request->email], function($message) use ($request){
             $message->to($request->email);
             $message->subject('reset your password');
         });

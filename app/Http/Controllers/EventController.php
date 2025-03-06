@@ -12,6 +12,37 @@ use App\Models\Ticket;
 
 class EventController extends Controller
 {
+    // CREATING AN EVENT
+    public function createEvent(Request $request){
+        $formData = $request->validate([
+            'title' => "required",
+            'description' => "required",
+            'location' => "required",
+            'category' => "required",
+            'date' => "required",
+            'time' => "required",
+            'price' => "required",
+            'attendees' => "required",
+        ]);
+
+        if($request->hasFile('media')){
+            $media = $request->file('media');
+            $mediaPath = $media->store('uploads', 'public');
+            // $uploads['media'] = $mediaPath;
+        }
+        $event = Event::create($formData);
+        $eventMedia = EventMedia::create([
+            'event_id' => $event->id,
+            'media_url' => $mediaPath
+        ]);
+
+        return [
+            'message' => "Event created successfully",
+            'event' => $event
+        ];
+
+
+    }
     // SHOWING LIST OF EVENTS
     function eventShow(){
         $events = Event::orderBy("created_at", "desc")->take(4)->get()->makeHidden(['created_at', 'updated_at']);
