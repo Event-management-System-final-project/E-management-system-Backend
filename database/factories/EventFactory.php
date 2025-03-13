@@ -19,7 +19,6 @@ class EventFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
             'organizer_id' => Organizer::factory(),
             'title' => fake()->word(),
             'description' => fake()->paragraph(),
@@ -34,25 +33,5 @@ class EventFactory extends Factory
         ];
     }
 
-    // EVENT CREATED BY THE USER
-    public function byUser()
-    {
-        return $this->state(function (array $attributes) {
-            return [
-                'user_id' => User::factory(),
-                'organizer_id' => null,
-            ];
-        });
-    }
-
-    // EVENT CREATED BY THE ORGANIZER
-    public function byOrganizer()
-    {
-        return $this->state(function (array $attributes) {
-            return [
-                'user_id' => null,
-                'organizer_id' => Organizer::factory(),
-            ];
-        });
-    }
+    
 }

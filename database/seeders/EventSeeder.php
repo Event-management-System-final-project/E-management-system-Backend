@@ -16,7 +16,7 @@ class EventSeeder extends Seeder
     {
      
         // Create events organized by users
-        Event::factory()->count(5)->create();
+        Event::factory()->count(10)->create();
 
        
 

@@ -12,7 +12,6 @@ class Event extends Model
     
     protected $fillable = [
         "organizer_id",
-        "user_id",
         "title",
         "description",
         "category",
@@ -22,12 +21,12 @@ class Event extends Model
         "attendees",
         "price",
         "status",
-        "feutured"
+        "featured"
 
     ];
 
     public function organizer()
     {
-        return $this->belongsTo(Organizer::class);
+        return $this->belongsTo(User::class);
     }
 }

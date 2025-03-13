@@ -15,6 +15,7 @@ class Organizer extends Model
         "user_id",
         "organization_name",
         "business_type",
+        "description",
         "address",
         "event_categories",
         "years_of_experience",

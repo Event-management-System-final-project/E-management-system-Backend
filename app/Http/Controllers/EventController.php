@@ -14,6 +14,7 @@ class EventController extends Controller
 {
     // CREATING AN EVENT
     public function createEvent(Request $request){
+        
         $formData = $request->validate([
             'title' => "required",
             'description' => "required",
@@ -24,10 +25,17 @@ class EventController extends Controller
             'price' => "required",
             'attendees' => "required",
         ]);
+        $user = auth()->user();
+      
 
+        $userid = User::where('id', $user->id)->first();
+        $formData['organizer_id'] = $userid->id;
+
+        $mediaPath = null;
         if($request->hasFile('media')){
             $media = $request->file('media');
             $mediaPath = $media->store('uploads', 'public');
+        
             // $uploads['media'] = $mediaPath;
         }
         $event = Event::create($formData);
@@ -46,15 +54,22 @@ class EventController extends Controller
     // SHOWING LIST OF EVENTS
     function eventShow(){
         $events = Event::orderBy("created_at", "desc")->take(4)->get()->makeHidden(['created_at', 'updated_at']);
+        $featuredEvents = Event::where("featured", true)->take(4)->get()->makeHidden(['created_at', 'updated_at']);
 
-        foreach($events as $event){
-            $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
-            $allEventMedia[$event->id] = $eventMedia;
-        }
+        // foreach($events as $event){
+        //     // $image = EventMedia::findOrFail($event->id);
+        //     // $imageUrl = asset('storage/' . $image->path);
+
+        //     // $image = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
+            
+            
+        //     // $imageUrl[$event->id] = asset('storage/' . $image[1]->medial_url);
+        // }
 
         return [
             "events" => $events,
-            "eventMedia" => $allEventMedia
+            "featuredEvents" => $featuredEvents,
+            // "eventMedia" => $imageUrl
         ];
 
     }
@@ -174,8 +189,10 @@ class EventController extends Controller
     // SHOWING DETAILS OF AN EVENT
     public function eventDetails(Request $request){
         $event = Event::where('id', $request->id)->first();
-        $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
-        $organizer = Organizer::where('id', $event->organizer_id)->first()->makeHidden(['created_at', 'updated_at']);
+       
+        // $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
+        $organizer = Organizer::where('id', $event->organizer_id)->get()->makeHidden(['created_at', 'updated_at']);
+        
         $tickets = Ticket::where('event_id', $event->id)->get();
 
         //    // Convert $event to a collection
@@ -188,7 +205,7 @@ class EventController extends Controller
 
         return [
             "event" => $event,
-            "eventMedia" => $eventMedia,
+            // "eventMedia" => $eventMedia,
             "organizer" => $organizer,
             "tickets" => $tickets
             // "eventDetails" => $merged

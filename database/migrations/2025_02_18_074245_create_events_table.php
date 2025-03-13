@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("user_id")->references("id")->on("users")->onDelete("cascade")->nullable();
-            $table->foreignId('organizer_id')->references('id')->on('organizers')->onDelete('cascade')->nullable();
+            $table->foreignId('organizer_id')->references('id')->on('users')->onDelete('cascade')->nullable();
             $table->string("title");
             $table->text("description");
             $table->string("category");
@@ -32,7 +31,7 @@ return new class extends Migration
         Schema::create('event_media', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->references('id')->on('events')->onDelete('cascade');
-            $table->string('media_type');
+            $table->string('media_type')->default('image');
             $table->string('media_url');
             $table->timestamps();
         });

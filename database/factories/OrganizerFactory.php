@@ -21,6 +21,7 @@ class OrganizerFactory extends Factory
         "user_id" => User::factory(),
         "organization_name" => $this->faker->company(),
         "business_type"=> $this->faker->randomElement(["Sole Proprietorship", "Partnership", "Corporation"]),
+        'description' => fake()->paragraph(),
         "address" => $this->faker->address(),
         "event_categories" => $this->faker->words(3, true),
         "years_of_experience" => $this->faker->numberBetween(1, 20),

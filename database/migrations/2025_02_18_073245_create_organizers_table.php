@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId("user_id")->references("id")->on("users")->onDelete("cascade");
             $table->string("organization_name");
             $table->string("business_type");
+            $table->string("description");
             $table->string("address");
             $table->string("event_categories");
             $table->string("years_of_experience");

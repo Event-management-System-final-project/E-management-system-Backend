@@ -22,7 +22,7 @@ Route::get("testimonial", [TestimonialController::class, 'userFeedback']);
 
 
 // CREATE EVENT
-Route::post("events/create", [EventController::class, 'createEvent']);
+Route::post("events/create", [EventController::class, 'createEvent'])->middleware('auth:sanctum');
 
 
 // test file upload
