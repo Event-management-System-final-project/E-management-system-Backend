@@ -74,4 +74,6 @@ class UserController extends Controller
         return "logged out succesfully";
 
     }
+
+    
 }

@@ -17,8 +17,12 @@ class OrganizerFactory extends Factory
      */
     public function definition(): array
     {
+
+        $organizerId = User::where('role', 'organizer')->pluck('id')->toArray();
+
+
         return [
-        "user_id" => User::factory(),
+        "user_id" => $this->faker->randomElement($organizerId),
         "organization_name" => $this->faker->company(),
         "business_type"=> $this->faker->randomElement(["Sole Proprietorship", "Partnership", "Corporation"]),
         'description' => fake()->paragraph(),

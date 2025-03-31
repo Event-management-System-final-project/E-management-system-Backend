@@ -51,6 +51,8 @@ class EventController extends Controller
 
 
     }
+
+
     // SHOWING LIST OF EVENTS
     function eventShow(){
         $events = Event::orderBy("created_at", "desc")->take(4)->get()->makeHidden(['created_at', 'updated_at']);
@@ -74,6 +76,9 @@ class EventController extends Controller
 
     }
 
+
+
+    // UPLOADING A FILE
     function uploadFile(Request $request){
         $request->validate([
             'file' => 'required|file'
@@ -87,6 +92,8 @@ class EventController extends Controller
             "filePath" => $filePath
         ];
     }
+
+
 
     // FEATURED EVENT DISPLAY
     function featuredEvents(){
@@ -103,6 +110,8 @@ class EventController extends Controller
         ];
 
     }
+
+
 
     // SEARCHING FOR EVENTS
     public function eventSearch($keyword){
@@ -153,7 +162,6 @@ class EventController extends Controller
     // SHOWING USER FEEDBACK FOR EVENTS
 
     function feedbackShow(){
-
         $feedbacks = Testimonial::take(10)->get();
         // return $feedbacks;
 
@@ -188,6 +196,7 @@ class EventController extends Controller
 
     // SHOWING DETAILS OF AN EVENT
     public function eventDetails(Request $request){
+        
         $event = Event::where('id', $request->id)->first();
        
         // $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
@@ -200,7 +209,7 @@ class EventController extends Controller
 
         //    // Convert $eventMedia to a collection
         //    $eventMediaCollection = collect($eventMedia);
-   
+
         //    $merged = $eventCollection->merge($eventMediaCollection);
 
         return [
@@ -211,5 +220,73 @@ class EventController extends Controller
             // "eventDetails" => $merged
         ];
 
+    }
+
+
+
+    // SHOWING EVENTS CREATED BY AN ORGANIZER
+    public function organizerEvents(Request $request){
+        $id = auth()->user()->id;
+        $events = Event::where('organizer_id', $id)->get();
+
+        $pastEvents = $events->filter(function($events){
+            return str_contains($events->status, 'past');
+        });
+
+        $upcomingEvents = $events->filter(function($events){
+            return str_contains($events->status, 'upcoming');
+        });
+
+        $ongoingEvents = $events->filter(function($events){
+            return str_contains($events->status, 'ongoing');
+        });
+
+
+        return response()->json([
+            "events" => $events,
+            "pastEvents" => $pastEvents,
+            "upcomingEvents" => $upcomingEvents,
+            "ongoingEvents" => $ongoingEvents,
+        ]);
+    }
+
+    // Organizer analytics
+    public function organizerAnalytics(Request $request){
+        $id = auth()->user()->id;
+        $events = Event::where('organizer_id', $id)->get();
+        $numberOfEvents = $events->count();
+       
+        $ticketsSold = 0;
+        foreach($events as $event){
+            $tickets = Ticket::where('event_id', $event->id)->count();
+            $ticketsSold += $tickets;
+        }
+
+        $eventsAndTickets= [];
+        foreach($events as $event){
+            $tickets = Ticket::where('event_id', $event->id)->count();
+            $eventsAndTickets[$event->id] = $tickets;
+        }
+
+        $totalRevenue = 0;
+        // foreach($events as $event){
+        //     $revenue = Ticket::where('event_id', $event->id)->sum('price');
+        //     $totalRevenue += $revenue;
+        // }
+
+        foreach($eventsAndTickets as $key => $value){
+            $event = Event::where('id', $key)->first();
+            $Revenue = $value * $event->price;
+            $totalRevenue += $Revenue;
+        }
+        return $totalRevenue;
+        
+
+        
+
+        return response()->json([
+            'events' => $numberOfEvents,
+            'tickets' => $ticketsSold
+        ]);
     }
 }

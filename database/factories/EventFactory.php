@@ -18,8 +18,9 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
+        $organizerid = User::where('role', 'organizer')->pluck('id')->toArray();
         return [
-            'organizer_id' => Organizer::factory(),
+            'organizer_id' => $this->faker->randomElement($organizerid),
             'title' => fake()->word(),
             'description' => fake()->paragraph(),
             'date' => fake()->date(),
