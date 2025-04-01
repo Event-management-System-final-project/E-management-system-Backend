@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\PasswordReset;
 
 // Route::get('/user', function (Request $request) {
@@ -75,3 +76,9 @@ Route::get('/organizer/tasks', [OrganizerController::class, 'tasks'])->middlewar
 Route::post('/organizer/tasks/create', [OrganizerController::class, 'createTask'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/update', [OrganizerController::class, 'updateTask'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/delete', [OrganizerController::class, 'deleteTask'])->middleware('auth:sanctum');
+
+// Task Comments
+Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
+Route::get('/organizer/tasks/comments/{taskId}', [TaskCommentController::class, 'getTaskComments'])->middleware('auth:sanctum');
+Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment'])->middleware('auth:sanctum');
+Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment'])->middleware('auth:sanctum');
