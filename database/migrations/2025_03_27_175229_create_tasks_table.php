@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('status', ['pending', 'in_progress', 'completed', 'blocked', 'not_started'])->default('not_started');
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
+            $table->string('dependencies')->nullable();
             $table->unsignedBigInteger('assigned_to')->nullable();
             $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
             $table->date('deadline')->nullable();

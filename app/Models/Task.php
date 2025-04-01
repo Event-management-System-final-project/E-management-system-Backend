@@ -16,6 +16,7 @@ class Task extends Model
         'priority',
         'assigned_to',
         'deadline',
+        'dependencies',
         'organizer_id',
         'event_id',
     ];

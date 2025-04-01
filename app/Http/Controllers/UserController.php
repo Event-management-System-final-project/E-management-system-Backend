@@ -47,12 +47,18 @@ class UserController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
+        $role = explode('-',$user->role)[0];
+        $user->role = $role;
+     
+
         
     if (! $user || ! Hash::check($request->password, $user->password)) {
         throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.'],
         ])->status(401);
     }
+
+  
 
     return response()->json(
         [
