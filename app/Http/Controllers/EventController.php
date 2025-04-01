@@ -279,14 +279,15 @@ class EventController extends Controller
             $Revenue = $value * $event->price;
             $totalRevenue += $Revenue;
         }
-        return $totalRevenue;
+        
         
 
         
 
         return response()->json([
             'events' => $numberOfEvents,
-            'tickets' => $ticketsSold
+            'tickets' => $ticketsSold,
+            'revenue' => $totalRevenue,
         ]);
     }
 }
