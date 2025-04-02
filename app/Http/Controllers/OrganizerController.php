@@ -108,26 +108,25 @@ class OrganizerController extends Controller
             'description' => "required",
             'status' => "required",
             'priority' => "required",
-            'assigned_to' => "required",
             'deadline' => "required|date",
         ]);
 
+        if($request->input('assigned_to')) {
+            $formData['assigned_to'] = $request->input('assigned_to');
+            $fullName = explode(" ", $formData['assigned_to']);
+            $firstName = $fullName[0];
+            $lastName = $fullName[1];
+            $user = User::where('firstName', $firstName)->where('lastName', $lastName)->first();
 
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
 
-        $fullName = explode(" ", $formData['assigned_to']);
-        $firstName = $fullName[0];
-        $lastName = $fullName[1];
-        $user = User::where('firstName', $firstName)->where('lastName', $lastName)->first();
+            $formData['assigned_to'] = $user->id;
+        } 
 
-       
-
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-
-        $formData['assigned_to'] = $user->id;
+    
+  
         $formData['event_id'] = $request->input('event_id');
 
         
@@ -164,7 +163,7 @@ class OrganizerController extends Controller
             'description' => $formData['description'],
             'status' => $formData['status'],
             'priority' => $formData['priority'],
-            'assigned_to' => $formData['assigned_to'],
+            'assigned_to' => $formData['assigned_to'] ?? null,
             'deadline' => $formData['deadline'],
             'dependencies' => $formData['dependencies'] ?? null,
             'organizer_id' => $user->id,
