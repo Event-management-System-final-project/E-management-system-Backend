@@ -12,13 +12,19 @@ class Task extends Model
     protected $fillable =[
         'title',
         'description',
+        'assigned_to',
+        'budget',
         'status',
         'priority',
-        'assigned_to',
-        'deadline',
+        'due_date',
         'dependencies',
         'organizer_id',
         'event_id',
+    ];
+
+    protected $casts = [
+        'dependencies' => 'array',
+        'assigned_to' => 'array',
     ];
 
     public function event()

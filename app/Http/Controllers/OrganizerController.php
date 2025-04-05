@@ -108,8 +108,11 @@ class OrganizerController extends Controller
             'description' => "required",
             'status' => "required",
             'priority' => "required",
-            'deadline' => "required|date",
+            'due_date' => "required|date",
+            'budget' => "required|integer",
         ]);
+
+      
 
         if($request->input('assigned_to')) {
             $formData['assigned_to'] = $request->input('assigned_to');
@@ -145,12 +148,13 @@ class OrganizerController extends Controller
 
         // Dependencies check
         if (isset($formData['dependencies'])) {
-            $dependencies = explode(',', $formData['dependencies']);
+            $dependencies = $formData['dependencies'];
             
-        
             foreach ($dependencies as $dependency) {
                 $task = Task::where('title', $dependency)
                 ->first();;
+
+                
                 if (!$task) {
                     return response()->json(['message' => 'Dependency task not found'], 404);
                 }
@@ -158,16 +162,18 @@ class OrganizerController extends Controller
         }
 
         $user = auth()->user();
+      
         $task = Task::create([
             'title' => $formData['title'],
             'description' => $formData['description'],
             'status' => $formData['status'],
             'priority' => $formData['priority'],
             'assigned_to' => $formData['assigned_to'] ?? null,
-            'deadline' => $formData['deadline'],
+            'due_date' => $formData['due_date'],
             'dependencies' => $formData['dependencies'] ?? null,
             'organizer_id' => $user->id,
             'event_id' => $formData['event_id'],
+            "budget" => $formData['budget'],
         ]);
 
         return response()->json([
