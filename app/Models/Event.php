@@ -19,6 +19,7 @@ class Event extends Model
         "time",
         "location",
         "attendees",
+        "budget",
         "price",
         "status",
         "featured"

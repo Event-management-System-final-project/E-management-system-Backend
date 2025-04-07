@@ -24,6 +24,7 @@ class EventController extends Controller
             'time' => "required",
             'price' => "required",
             'attendees' => "required",
+            'budget' => "required",
         ]);
         $user = auth()->user();
       

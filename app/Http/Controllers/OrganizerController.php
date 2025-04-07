@@ -286,6 +286,7 @@ class OrganizerController extends Controller
 // DELETE A TASK
 public function deleteTask($id)
 {
+ 
     // GETTING THE AUTHENTICATED ORGANIZER
     $user = auth()->user();
     // FINDING THE TASK
