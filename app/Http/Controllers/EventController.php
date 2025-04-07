@@ -36,7 +36,6 @@ class EventController extends Controller
             $media = $request->file('media');
             $mediaPath = $media->store('uploads', 'public');
         
-            // $uploads['media'] = $mediaPath;
         }
         $event = Event::create($formData);
         $eventMedia = EventMedia::create([

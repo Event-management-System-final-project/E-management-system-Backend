@@ -111,6 +111,12 @@ class OrganizerController extends Controller
             'category' => "required",
             'due_date' => "required|date",
             'budget' => "required|integer",
+            'budget_spent' => "required|integer",
+            'assigned_to' => "nullable|string",
+            'event_id' => "required|integer",
+            'dependencies' => "nullable|array",
+
+            
         ]);
 
       
