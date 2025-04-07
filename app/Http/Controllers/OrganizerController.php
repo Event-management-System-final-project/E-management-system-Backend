@@ -89,9 +89,12 @@ class OrganizerController extends Controller
         $user = auth()->user();
         $tasks = Task::where('organizer_id', $user->id)->with('user')->get();
 
+        $dependencies = Task::where('organizer_id', $user->id)->pluck('dependencies')->toArray();
+
         return response()->json([
             'message' => "Tasks fetched successfully",
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'dependencies' => $dependencies
         ]);
     }
 
