@@ -108,6 +108,7 @@ class OrganizerController extends Controller
             'description' => "required",
             'status' => "required",
             'priority' => "required",
+            'category' => "required",
             'due_date' => "required|date",
             'budget' => "required|integer",
         ]);
@@ -167,6 +168,7 @@ class OrganizerController extends Controller
             'title' => $formData['title'],
             'description' => $formData['description'],
             'status' => $formData['status'],
+            'category' => $formData['category'],
             'priority' => $formData['priority'],
             'assigned_to' => $formData['assigned_to'] ?? null,
             'due_date' => $formData['due_date'],

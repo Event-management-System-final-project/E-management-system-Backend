@@ -14,12 +14,14 @@ class Task extends Model
         'description',
         'assigned_to',
         'budget',
+        'budget_spent',
         'status',
         'priority',
         'due_date',
         'dependencies',
         'organizer_id',
         'event_id',
+        'category'
     ];
 
     protected $casts = [
