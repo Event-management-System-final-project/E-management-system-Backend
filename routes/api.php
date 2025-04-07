@@ -74,8 +74,8 @@ Route::post('/organizer/members/update', [OrganizerController::class, 'updateMem
 //Task Management
 Route::get('/organizer/tasks', [OrganizerController::class, 'tasks'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/create', [OrganizerController::class, 'createTask'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/update', [OrganizerController::class, 'updateTask'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/delete', [OrganizerController::class, 'deleteTask'])->middleware('auth:sanctum');
+Route::put('/organizer/tasks/update/{id}', [OrganizerController::class, 'updateTask'])->middleware('auth:sanctum');
+Route::delete('/organizer/tasks/delete', [OrganizerController::class, 'deleteTask'])->middleware('auth:sanctum');
 
 // Task Comments
 Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');

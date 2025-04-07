@@ -189,4 +189,116 @@ class OrganizerController extends Controller
             'task' => $task
         ]);
     }
+
+    public function updateTask(Request $request, $id)
+    {
+        $formData = $request->validate([
+            'title' => "required",
+            'description' => "required",
+            'status' => "required",
+            'priority' => "required",
+            'category' => "required",
+            'due_date' => "required|date",
+            'budget_spent' => "required|integer",
+            'assigned_to' => "nullable|string",
+            'event_id' => "required|integer",
+            'dependencies' => "nullable|array",
+
+            
+        ]);
+
+        if($request->input('assigned_to')) {
+            $formData['assigned_to'] = $request->input('assigned_to');
+            $fullName = explode(" ", $formData['assigned_to']);
+            $firstName = $fullName[0];
+            $lastName = $fullName[1];
+            $user = User::where('firstName', $firstName)->where('lastName', $lastName)->first();
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            $formData['assigned_to'] = $user->id;
+        } 
+
+    
+  
+        $formData['event_id'] = $request->input('event_id');
+
+        
+        if (!$formData['event_id']) {
+            return response()->json(['message' => 'Event ID is required'], 400);
+        }
+
+        $event = Event::find($formData['event_id']);
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        $formData['dependencies'] = $request->input('dependencies');
+        
+        
+
+        // Dependencies check
+        if (isset($formData['dependencies'])) {
+            $dependencies = $formData['dependencies'];
+            
+            foreach ($dependencies as $dependency) {
+                $task = Task::where('title', $dependency)
+                ->first();;
+
+                
+                if (!$task) {
+                    return response()->json(['message' => 'Dependency task not found'], 404);
+                }
+            }
+        }
+
+        // GETTING THE AUTHENTICATED ORGANIZER
+        $user = auth()->user();
+      
+        // FINDING THE TASK
+        $task = Task::where('id', $id)->where('organizer_id',$user->id)->first();
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+        // UPDATING THE TASK
+        $task->update([
+            'title' => $formData['title'],
+            'description' => $formData['description'],
+            'status' => $formData['status'],
+            'category' => $formData['category'],
+            'priority' => $formData['priority'],
+            'assigned_to' => $formData['assigned_to'] ?? null,
+            'due_date' => $formData['due_date'],
+            'dependencies' => $formData['dependencies'] ?? null,
+            'organizer_id' => $user->id,
+            'event_id' => $formData['event_id'],
+            "budget_spent" => $formData['budget_spent'],
+        ]);
+        return response()->json([
+            'message' => "Task updated successfully",
+            'task' => $task
+        ]);
+}
+
+
+// DELETE A TASK
+public function deleteTask($id)
+{
+    // GETTING THE AUTHENTICATED ORGANIZER
+    $user = auth()->user();
+    // FINDING THE TASK
+    $task = Task::where('id', $id)->where('organizer_id', $user->id)->first();
+    if (!$task) {
+        return response()->json(['message' => 'Task not found'], 404);
+    }
+    // DELETING THE TASK
+    $task->delete();
+    return response()->json([
+        'message' => "Task deleted successfully",
+        'task' => $task
+    ]);
+}
+
 }
