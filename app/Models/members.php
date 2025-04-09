@@ -13,7 +13,7 @@ class members extends Model
     protected $fillable = [
         'user_id',
         'organizer_id',
-        'task_id',
+        'phone'
     ];
 
     public function user()
@@ -23,6 +23,11 @@ class members extends Model
     public function organizer()
     {
         return $this->belongsTo(User::class, 'organizer_id');
+    }
+
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class);
     }
 
     

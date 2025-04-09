@@ -17,8 +17,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('organizer_id');
             $table->foreign('organizer_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('task_id')->nullable();
-            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade')->nullable();
+          
             
 
 

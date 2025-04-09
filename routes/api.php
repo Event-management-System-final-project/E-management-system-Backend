@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\OrganizerController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TaskCommentController;
@@ -60,10 +61,10 @@ Route::get('/organizer/events/', [EventController::class, 'organizerEvents'])->m
 Route::get('/organizer/analytics/', [EventController::class, 'organizerAnalytics'])->middleware('auth:sanctum');
 
 //Members Managwement
-Route::get('/organizer/members', [OrganizerController::class, 'members'])->middleware('auth:sanctum');
-Route::post('/organizer/members/add', [OrganizerController::class, 'addMember'])->middleware('auth:sanctum');
-Route::post('/organizer/members/remove', [OrganizerController::class, 'removeMember'])->middleware('auth:sanctum');
-Route::post('/organizer/members/update', [OrganizerController::class, 'updateMember'])->middleware('auth:sanctum');
+Route::get('/organizer/members', [MemberController::class, 'members'])->middleware('auth:sanctum');
+Route::post('/organizer/members/add', [MemberController::class, 'addMember'])->middleware('auth:sanctum');
+Route::post('/organizer/members/remove', [MemberController::class, 'removeMember'])->middleware('auth:sanctum');
+Route::post('/organizer/members/update', [MemberController::class, 'updateMember'])->middleware('auth:sanctum');
 
 
 // Route::get('/organizer/members/{id}', [UserController::class, 'memberDetails'])->middleware('auth:sanctum');
@@ -78,10 +79,12 @@ Route::post('/organizer/members/update', [OrganizerController::class, 'updateMem
 
 
 //Task Management
-Route::get('/organizer/tasks', [OrganizerController::class, 'tasks'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/create', [OrganizerController::class, 'createTask'])->middleware('auth:sanctum');
-Route::put('/organizer/tasks/update/{id}', [OrganizerController::class, 'updateTask'])->middleware('auth:sanctum');
-Route::delete('/organizer/tasks/delete/{id}', [OrganizerController::class, 'deleteTask'])->middleware('auth:sanctum');
+Route::get('/organizer/events/tasks/{id}', [TaskController::class, 'tasks'])->middleware('auth:sanctum');
+Route::get('/organizer/tasks/details/{id}', [TaskController::class, 'tasksDetail'])->middleware('auth:sanctum');
+Route::post('/organizer/tasks/create', [TaskController::class, 'createTask'])->middleware('auth:sanctum');
+Route::get('/organizer/tasks/update/{id}', [TaskController::class, 'updateTaskShow'])->middleware('auth:sanctum');
+Route::put('/organizer/tasks/update/{id}', [TaskController::class, 'updateTask'])->middleware('auth:sanctum');
+Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTask'])->middleware('auth:sanctum');
 
 
 
@@ -89,7 +92,7 @@ Route::delete('/organizer/tasks/delete/{id}', [OrganizerController::class, 'dele
 
 
 // Task Comments
-Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
 Route::get('/organizer/tasks/comments/{taskId}', [TaskCommentController::class, 'getTaskComments'])->middleware('auth:sanctum');
+Route::post('/organizer/tasks/comments/create/{id}', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment'])->middleware('auth:sanctum');

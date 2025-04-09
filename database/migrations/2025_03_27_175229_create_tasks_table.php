@@ -21,9 +21,6 @@ return new class extends Migration
             $table->enum('status', ['pending', 'in_progress', 'completed', 'blocked', 'not_started'])->default('not_started');
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
             $table->json('dependencies')->nullable();
-            $table->unsignedBigInteger('assigned_to')->nullable();
-            $table->foreign('assigned_to')->references('id')->on('users')->onDelete('cascade');
-
             $table->date('due_date')->nullable();
             $table->unsignedBigInteger('organizer_id');
             $table->foreign('organizer_id')->references('id')->on('users')->onDelete('cascade');

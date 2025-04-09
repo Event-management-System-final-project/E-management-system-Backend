@@ -15,4 +15,13 @@ class TaskComments extends Model
         'comment',
         'user_id',
     ];
+
+    public function tasks()
+    {
+        return $this->belongsTo(Task::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
