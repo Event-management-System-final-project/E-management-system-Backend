@@ -12,13 +12,21 @@ class Task extends Model
     protected $fillable =[
         'title',
         'description',
+        'assigned_to',
+        'budget',
+        'budget_spent',
         'status',
         'priority',
-        'assigned_to',
-        'deadline',
+        'due_date',
         'dependencies',
         'organizer_id',
         'event_id',
+        'category'
+    ];
+
+    protected $casts = [
+        'dependencies' => 'array',
+        'assigned_to' => 'array',
     ];
 
     public function event()
@@ -32,5 +40,15 @@ class Task extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function taskComments()
+    {
+        return $this->hasMany(TaskComments::class);
+    }
+
+    public function members()
+    {
+        return $this->belongsToMany(members::class);
     }
 }

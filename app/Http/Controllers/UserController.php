@@ -39,37 +39,29 @@ class UserController extends Controller
 
     // FUNCTION TO LOGIN A USER
     public function login(Request $request){
-        $request->validate([
-            'email' => "required|email",
-            'password' => "required"
+    $request->validate([
+        'email' => "required|email",
+        'password' => "required"
+    ]);
 
-        ]);
+    $user = User::where('email', $request->email)->first();
 
-        $user = User::where('email', $request->email)->first();
-
-        $role = explode('-',$user->role)[0];
-        $user->role = $role;
-     
-
-        
+    // ✅ Check if user exists *before* accessing its properties
     if (! $user || ! Hash::check($request->password, $user->password)) {
         throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.'],
         ])->status(401);
     }
 
-  
+    // Now safe to access role
+    $role = explode('-', $user->role)[0];
+    $user->role = $role;
 
-    return response()->json(
-        [
-            'token' =>  $user->createToken($user->firstName)->plainTextToken,
-            'user' => $user
-        ], 200
-    );
-
-
-
-    }
+    return response()->json([
+        'token' =>  $user->createToken($user->firstName)->plainTextToken,
+        'user' => $user
+    ], 200);
+}
 
     
 

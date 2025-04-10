@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('category');
             $table->text('description');
+            $table->double('budget');
+            $table->double('budget_spent')->default(0);
             $table->enum('status', ['pending', 'in_progress', 'completed', 'blocked', 'not_started'])->default('not_started');
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
-            $table->string('dependencies')->nullable();
-            $table->unsignedBigInteger('assigned_to')->nullable();
-            $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
-            $table->date('deadline')->nullable();
+            $table->json('dependencies')->nullable();
+            $table->date('due_date')->nullable();
             $table->unsignedBigInteger('organizer_id');
             $table->foreign('organizer_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('event_id');

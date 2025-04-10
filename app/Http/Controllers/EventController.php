@@ -24,6 +24,7 @@ class EventController extends Controller
             'time' => "required",
             'price' => "required",
             'attendees' => "required",
+            'budget' => "required",
         ]);
         $user = auth()->user();
       
@@ -36,7 +37,6 @@ class EventController extends Controller
             $media = $request->file('media');
             $mediaPath = $media->store('uploads', 'public');
         
-            // $uploads['media'] = $mediaPath;
         }
         $event = Event::create($formData);
         $eventMedia = EventMedia::create([
@@ -279,14 +279,15 @@ class EventController extends Controller
             $Revenue = $value * $event->price;
             $totalRevenue += $Revenue;
         }
-        return $totalRevenue;
+        
         
 
         
 
         return response()->json([
             'events' => $numberOfEvents,
-            'tickets' => $ticketsSold
+            'tickets' => $ticketsSold,
+            'revenue' => $totalRevenue,
         ]);
     }
 }
