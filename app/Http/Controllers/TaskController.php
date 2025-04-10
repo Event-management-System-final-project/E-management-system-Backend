@@ -283,9 +283,9 @@ public function tasksDetail($id)
     }
 
     $assignedTo = $task->assigned_to;
-    $assignedMemebr = members::where('id', $assignedTo)->with('user')->first();
+    $assignedMemeber = members::where('id', $assignedTo)->with('user')->first();
 
-    return $assignedMemebr;
+    return $assignedMemeber;
 
 
     return response()->json([
@@ -295,5 +295,14 @@ public function tasksDetail($id)
     ]);
 }
 
+// FUNCTION TO GET TASKS BY EVENT
+public function getTasksByEvent($event_id)
+{
+    $tasks = Task::with('user') // Include the user relationship
+        ->where('event_id', $event_id)
+        ->get();
+
+    return response()->json(['tasks' => $tasks]);
+}
 
 }
