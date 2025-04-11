@@ -46,7 +46,8 @@ class EventController extends Controller
 
         return [
             'message' => "Event created successfully",
-            'event' => $event
+            'event' => $event,
+            'eventMedia' => $eventMedia
         ];
 
 

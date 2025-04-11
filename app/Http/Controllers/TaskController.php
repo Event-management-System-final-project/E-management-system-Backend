@@ -269,7 +269,8 @@ public function updateTask(Request $request, $id)
 //FUNCTION TO DELETE A TASK
 public function deleteTask($id)
 {
- 
+
+    
     // GETTING THE AUTHENTICATED ORGANIZER
     $user = auth()->user();
     // FINDING THE TASK
