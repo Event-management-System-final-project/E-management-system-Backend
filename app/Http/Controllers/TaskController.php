@@ -54,7 +54,7 @@ public function createTask(Request $request)
         
     ]);
 
-  
+  $assigned_to = null;
 
     if($request->input('assigned_to')) {
         $formData['assigned_to'] = $request->input('assigned_to');
@@ -69,6 +69,8 @@ public function createTask(Request $request)
         }
 
         $formData['assigned_to'] = $member->id;
+
+        $assigned_to = $request->input('assigned_to');
     } 
 
 
@@ -126,7 +128,8 @@ public function createTask(Request $request)
 
     return response()->json([
         'message' => "Task added successfully",
-        'task' => $task
+        'task' => $task,
+        'assigned_to' => $assigned_to,
     ]);
 }
 
