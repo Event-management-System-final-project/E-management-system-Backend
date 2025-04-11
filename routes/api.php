@@ -80,7 +80,7 @@ Route::post('/organizer/members/update', [MemberController::class, 'updateMember
 
 
 //Task Management
-Route::get('/organizer/events/tasks/{id}', [TaskController::class, 'tasks'])->middleware('auth:sanctum');
+Route::get('/organizer/events/tasks/{event_id}', [TaskController::class, 'tasks'])->middleware('auth:sanctum');
 Route::get('/organizer/tasks/details/{id}', [TaskController::class, 'tasksDetail'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/create', [TaskController::class, 'createTask'])->middleware('auth:sanctum');
 Route::get('/organizer/tasks/update/{id}', [TaskController::class, 'updateTaskShow'])->middleware('auth:sanctum');
