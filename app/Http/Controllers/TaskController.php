@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\Event;
 use App\Models\TaskComments;
 use App\Models\members;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
@@ -271,10 +272,24 @@ public function tasksDetail($id)
    
    
     // FINDING THE TASK
-    $task = Task::where('id', $id)->where('organizer_id',$user->id)->first();
+    $task = Task::where('id', $id)->first();
     if (!$task) {
         return response()->json(['message' => 'Task not found'], 404);
     }
+    
+
+    $eventName = Event::find($task->event_id)?->title;
+    $taskDetail = [];
+
+    $taskDetail[] = [
+        "created_by" => $user->firstName . " " . $user->lastName,
+        "created_on" => Carbon::parse($task->created_at)->format('M j, Y'),
+        "last_updated" => Carbon::parse($task->updated_at)->format('M j, Y'),
+        "event" => $eventName,
+          
+    ];
+
+ 
 
     // GETTING THE TASK COMMENTS
     $taskComments = TaskComments::where('task_id', $id)->with('user')->get();
@@ -282,16 +297,55 @@ public function tasksDetail($id)
         return response()->json(['message' => 'Task comments not found'], 404);
     }
 
-    $assignedTo = $task->assigned_to;
-    $assignedMemebr = members::where('id', $assignedTo)->with('user')->first();
+    
+    $assignedMember = $task->members()->get();
 
-    return $assignedMemebr;
+    // $user = User::where('id', $assignedMemebr->id)->first();
+    $assignedTeamMember = [];
+    
+    // $assignedUser = User::where('id', $assignedMember->user_id)->first();
+
+    foreach($assignedMember as $member){
+        $user = User::where('id', $member->user_id)->first();
+        $role = explode("-", $user->role)[1];
+        $assignedTeamMember[] = [
+            'id' => $user->id,
+            'firstName' => $user->firstName,
+            'lastName' => $user->lastName,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'profile_picture' => $user->profile_picture,
+            'role' => $role,
+        ];
+    }
+    $assignedTeamMember = null;
+
+    // if (!$assignedTeamMember) {
+    //     return response()->json([
+            
+    //         'message' => "Task details fetched successfully",
+    //         'task' => $task,
+    //         'taskComments' => $taskComments,
+    //         'assignedUser' => null
+    //     ]);
+    // }
+
+    $attachments = $task->attachments()->get();
+  
+    if (!$attachments) {
+        $attachments = null;
+    } 
+    
+ 
 
 
     return response()->json([
         'message' => "Task details fetched successfully",
         'task' => $task,
-        'taskComments' => $taskComments
+        'taskComments' => $taskComments,
+        'assignedUser' => $assignedTeamMember,
+        'taskDetail' => $taskDetail,
+        'attachments' => $attachments
     ]);
 }
 

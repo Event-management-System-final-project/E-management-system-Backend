@@ -9,6 +9,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\PasswordReset;
+use App\Http\Controllers\AttachmentController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -96,3 +97,6 @@ Route::get('/organizer/tasks/comments/{taskId}', [TaskCommentController::class, 
 Route::post('/organizer/tasks/comments/create/{id}', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment'])->middleware('auth:sanctum');
+
+//Task Attachments
+Route::post('/organizer/tasks/attachments/upload', [AttachmentController::class, 'store'])->middleware('auth:sanctum');
