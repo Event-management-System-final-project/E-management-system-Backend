@@ -140,6 +140,20 @@ public function updateTaskShow(Request $request, $id){
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // FUNCTION TO UPDATE A TASK
 public function updateTask(Request $request, $id)
 {
@@ -232,6 +246,19 @@ public function updateTask(Request $request, $id)
         'task' => $task
     ]);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
