@@ -35,7 +35,7 @@ class TaskCommentController extends Controller
 
 
 
-        public function createTaskComment(Request $request, $id)
+        public function createTaskComment(Request $request)
         {
 
             return auth()->user();
@@ -44,7 +44,7 @@ class TaskCommentController extends Controller
                 'comment' => 'required|string|max:255',
             ]);
 
-            $task = Task::find($id);
+            $task = Task::find($request->task_id);
             if (!$task) {
                 return response()->json([
                     'message' => "Task not found"

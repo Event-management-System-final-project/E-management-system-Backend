@@ -133,11 +133,11 @@ public function createTask(Request $request)
 
 
 
-public function updateTaskShow(Request $request, $id){
-    $task = Task::where('id', $id)->get();
-    return $task;
+// public function updateTaskShow(Request $request, $id){
+//     $task = Task::where('id', $id)->get();
+//     return $task;
 
-}
+// }
 
 
 
@@ -155,7 +155,7 @@ public function updateTaskShow(Request $request, $id){
 
 
 // FUNCTION TO UPDATE A TASK
-public function updateTask(Request $request, $id)
+public function updateTask(Request $request)
 {
     $formData = $request->validate([
         'title' => "required",
@@ -221,9 +221,9 @@ public function updateTask(Request $request, $id)
 
     // GETTING THE AUTHENTICATED ORGANIZER
     $user = auth()->user();
-  
+    
     // FINDING THE TASK
-    $task = Task::where('id', $id)->where('organizer_id',$user->id)->first();
+    $task = Task::where('id', $request->task_id)->where('organizer_id',$user->id)->first();
     if (!$task) {
         return response()->json(['message' => 'Task not found'], 404);
     }
@@ -234,13 +234,14 @@ public function updateTask(Request $request, $id)
         'status' => $formData['status'],
         'category' => $formData['category'],
         'priority' => $formData['priority'],
-        'assigned_to' => $formData['assigned_to'] ?? null,
         'due_date' => $formData['due_date'],
         'dependencies' => $formData['dependencies'] ?? null,
         'organizer_id' => $user->id,
         'event_id' => $formData['event_id'],
         "budget_spent" => $formData['budget_spent'],
     ]);
+
+    $task->members()->sync($formData['assigned_to']);
     return response()->json([
         'message' => "Task updated successfully",
         'task' => $task

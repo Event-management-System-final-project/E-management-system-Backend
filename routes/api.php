@@ -83,8 +83,9 @@ Route::post('/organizer/members/update', [MemberController::class, 'updateMember
 Route::get('/organizer/events/tasks/{event_id}', [TaskController::class, 'tasks'])->middleware('auth:sanctum');
 Route::get('/organizer/tasks/details/{id}', [TaskController::class, 'tasksDetail'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/create', [TaskController::class, 'createTask'])->middleware('auth:sanctum');
+
 Route::get('/organizer/tasks/update/{id}', [TaskController::class, 'updateTaskShow'])->middleware('auth:sanctum');
-Route::put('/organizer/tasks/update/{id}', [TaskController::class, 'updateTask'])->middleware('auth:sanctum');
+Route::put('/organizer/tasks/update', [TaskController::class, 'updateTask'])->middleware('auth:sanctum');
 Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTask'])->middleware('auth:sanctum');
 
 
@@ -93,8 +94,8 @@ Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTas
 
 
 // Task Comments
-Route::get('/organizer/tasks/comments/{taskId}', [TaskCommentController::class, 'getTaskComments'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/comments/create/{id}', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
+Route::get('/organizer/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments'])->middleware('auth:sanctum');
+Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment'])->middleware('auth:sanctum');
 
