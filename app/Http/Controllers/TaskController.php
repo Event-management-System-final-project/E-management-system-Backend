@@ -118,6 +118,7 @@ public function createTask(Request $request)
         'organizer_id' => $user->id,
         'event_id' => $formData['event_id'],
         "budget" => $formData['budget'],
+        "budget_spent" => $formData['budget_spent'],
     ]);
 
     $task->members()->attach($formData['assigned_to']);
