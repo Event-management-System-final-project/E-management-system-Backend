@@ -135,17 +135,6 @@ public function createTask(Request $request)
 
 
 
-// public function updateTaskShow(Request $request, $id){
-//     $task = Task::where('id', $id)->get();
-//     return $task;
-
-// }
-
-
-
-
-
-
 
 
 
@@ -263,12 +252,6 @@ public function updateTask(Request $request)
 
 
 
-
-
-
-
-
-
 //FUNCTION TO DELETE A TASK
 public function deleteTask($id)
 {
@@ -300,83 +283,58 @@ public function tasksDetail($id)
     
     // GETTING THE AUTHENTICATED ORGANIZER
     $user = auth()->user();
-   
-   
-    // FINDING THE TASK
-    $task = Task::where('id', $id)->first();
-    if (!$task) {
-        return response()->json(['message' => 'Task not found'], 404);
-    }
-    
 
-    $eventName = Event::find($task->event_id)?->title;
-    $taskDetail = [];
 
-    $taskDetail[] = [
-        "created_by" => $user->firstName . " " . $user->lastName,
-        "created_on" => Carbon::parse($task->created_at)->format('M j, Y'),
-        "last_updated" => Carbon::parse($task->updated_at)->format('M j, Y'),
-        "event" => $eventName,
-          
-    ];
+    $task = Task::where('id', $id)->with('members.user')
+                                   ->with('user')
+                                  ->with('attachments')
+                                  ->with('taskComments.user')   
+                                  ->with('event')  
+                                  ->get();
+
+
+
+
+
+
+
+    // $creator = User::where('id', $task1->organizer_id)->first()->toArray();
+    // $task = $task1->toArray();
+    // return array_merge($creator, $task);
 
  
+    // $task = $Unformattedtask->map(function ($task) {
+    //     $formattedDates = [
+    //     'due_date' => Carbon::parse($task->due_date)->format('Y-m-d'),
+    //     'created_at' => Carbon::parse($task->created_at)->format('Y-m-d'),
+    //     'updated_at' => Carbon::parse($task->updated_at)->format('Y-m-d'),
+    //     ];
 
-    // GETTING THE TASK COMMENTS
-    $taskComments = TaskComments::where('task_id', $id)->with('user')->get();
-    if (!$taskComments) {
-        return response()->json(['message' => 'Task comments not found'], 404);
-    }
+    //     $task->attachments = collect($task->attachments)->map(function ($attachment) {
+    //         return [
+    //             'id' => $attachment->id,
+    //             'file_name' => $attachment->file_name,
+    //             'file_path' => $attachment->file_path,
+    //             'created_at' => Carbon::parse($attachment->created_at)->format('Y-m-d'),
+    //         ];
+    //     });
 
-    
-    $assignedMember = $task->members()->get();
+    //     return $task;
 
-    // $user = User::where('id', $assignedMemebr->id)->first();
-    $assignedTeamMember = [];
-    
-    // $assignedUser = User::where('id', $assignedMember->user_id)->first();
 
-    foreach($assignedMember as $member){
-        $user = User::where('id', $member->user_id)->first();
-        $role = explode("-", $user->role)[1];
-        $assignedTeamMember[] = [
-            'id' => $user->id,
-            'firstName' => $user->firstName,
-            'lastName' => $user->lastName,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'profile_picture' => $user->profile_picture,
-            'role' => $role,
-        ];
-    }
-    $assignedTeamMember = null;
+    //     $attributes = $task->toArray();
+    //     return array_merge($attributes, $formattedDates);
 
-    // if (!$assignedTeamMember) {
-    //     return response()->json([
-            
-    //         'message' => "Task details fetched successfully",
-    //         'task' => $task,
-    //         'taskComments' => $taskComments,
-    //         'assignedUser' => null
-    //     ]);
-    // }
+       
+    // });
+   
 
-    $attachments = $task->attachments()->get();
-  
-    if (!$attachments) {
-        $attachments = null;
-    } 
-    
- 
 
 
     return response()->json([
         'message' => "Task details fetched successfully",
         'task' => $task,
-        'taskComments' => $taskComments,
-        'assignedUser' => $assignedTeamMember,
-        'taskDetail' => $taskDetail,
-        'attachments' => $attachments
+       
     ]);
 }
 
