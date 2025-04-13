@@ -157,7 +157,6 @@ public function updateTask(Request $request)
         'due_date' => "required|date",
         'budget_spent' => "required|integer",
         'assigned_to' => "nullable|string",
-        'event_id' => "required|integer",
         'dependencies' => "nullable|array",
 
         
@@ -179,17 +178,9 @@ public function updateTask(Request $request)
 
 
 
-    $formData['event_id'] = $request->input('event_id');
-
     
-    if (!$formData['event_id']) {
-        return response()->json(['message' => 'Event ID is required'], 400);
-    }
 
-    $event = Event::find($formData['event_id']);
-    if (!$event) {
-        return response()->json(['message' => 'Event not found'], 404);
-    }
+
 
     $formData['dependencies'] = $request->input('dependencies');
     
@@ -228,7 +219,6 @@ public function updateTask(Request $request)
         'due_date' => $formData['due_date'],
         'dependencies' => $formData['dependencies'] ?? null,
         'organizer_id' => $user->id,
-        'event_id' => $formData['event_id'],
         "budget_spent" => $formData['budget_spent'],
     ]);
 
@@ -291,45 +281,7 @@ public function tasksDetail($id)
                                   ->with('taskComments.user')   
                                   ->with('event')  
                                   ->get();
-
-
-
-
-
-
-
-    // $creator = User::where('id', $task1->organizer_id)->first()->toArray();
-    // $task = $task1->toArray();
-    // return array_merge($creator, $task);
-
- 
-    // $task = $Unformattedtask->map(function ($task) {
-    //     $formattedDates = [
-    //     'due_date' => Carbon::parse($task->due_date)->format('Y-m-d'),
-    //     'created_at' => Carbon::parse($task->created_at)->format('Y-m-d'),
-    //     'updated_at' => Carbon::parse($task->updated_at)->format('Y-m-d'),
-    //     ];
-
-    //     $task->attachments = collect($task->attachments)->map(function ($attachment) {
-    //         return [
-    //             'id' => $attachment->id,
-    //             'file_name' => $attachment->file_name,
-    //             'file_path' => $attachment->file_path,
-    //             'created_at' => Carbon::parse($attachment->created_at)->format('Y-m-d'),
-    //         ];
-    //     });
-
-    //     return $task;
-
-
-    //     $attributes = $task->toArray();
-    //     return array_merge($attributes, $formattedDates);
-
-       
-    // });
    
-
-
 
     return response()->json([
         'message' => "Task details fetched successfully",
