@@ -19,14 +19,12 @@ class TaskController extends Controller
    public function tasks($id){
 
     $user = auth()->user();
-    $tasks = Task::where('organizer_id', $user->id)->where('event_id', $id)->with('user')->get();
 
-    $dependencies = Task::where('organizer_id', $user->id)->pluck('dependencies')->toArray();
-
+    $tasks = Task::where('organizer_id', $user->id)->where('event_id', $id)->with('members.user')->get();
     return response()->json([
         'message' => "Tasks fetched successfully",
         'tasks' => $tasks,
-        'dependencies' => $dependencies
+        
     ]);
 }
 
