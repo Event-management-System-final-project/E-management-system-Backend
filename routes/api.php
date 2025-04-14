@@ -88,6 +88,8 @@ Route::get('/organizer/tasks/update/{id}', [TaskController::class, 'updateTaskSh
 Route::put('/organizer/tasks/update', [TaskController::class, 'updateTask'])->middleware('auth:sanctum');
 Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTask'])->middleware('auth:sanctum');
 
+Route::put('/organizer/tasks/complete', [TaskController::class, 'completeTask'])->middleware('auth:sanctum');
+
 
 
 

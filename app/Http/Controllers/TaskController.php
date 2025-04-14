@@ -291,4 +291,34 @@ public function tasksDetail($id)
 }
 
 
+
+
+// Function to mark as task completed
+
+public function completeTask(){
+    $formData = request()->validate([
+        'task_id' => "required|integer",
+        'status' => "required|string",
+    ]);
+
+    // GETTING THE AUTHENTICATED ORGANIZER
+    $user = auth()->user();
+    
+    // FINDING THE TASK
+    $task = Task::where('id', $formData['task_id'])->where('organizer_id',$user->id)->first();
+    if (!$task) {
+        return response()->json(['message' => 'Task not found'], 404);
+    }
+    // UPDATING THE TASK
+    $task->update([
+        'status' => $formData['status'],
+        
+    ]);
+
+    return response()->json([
+        'message' => "Task updated successfully",
+        'task' => $task
+    ]);
+}
+
 }
