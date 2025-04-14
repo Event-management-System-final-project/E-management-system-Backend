@@ -89,20 +89,7 @@ public function createTask(Request $request)
     
     
 
-    // Dependencies check
-    if (isset($formData['dependencies'])) {
-        $dependencies = $formData['dependencies'];
-        
-        foreach ($dependencies as $dependency) {
-            $task = Task::where('title', $dependency)
-            ->first();;
 
-            
-            if (!$task) {
-                return response()->json(['message' => 'Dependency task not found'], 404);
-            }
-        }
-    }
 
     $user = auth()->user();
   
@@ -196,9 +183,9 @@ public function updateTask(Request $request)
     
     // FINDING THE TASK
     $task = Task::where('id', $request->task_id)->where('organizer_id',$user->id)->first();
-    if (!$task) {
-        return response()->json(['message' => 'Task not found'], 404);
-    }
+    // if (!$task) {
+    //     return response()->json(['message' => 'Task not found'], 404);
+    // }
     // UPDATING THE TASK
     $task->update([
         'title' => $formData['title'],
