@@ -9,6 +9,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\PasswordReset;
+use App\Http\Controllers\AttachmentController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -79,12 +80,14 @@ Route::post('/organizer/members/update', [MemberController::class, 'updateMember
 
 
 //Task Management
-Route::get('/organizer/events/tasks/{id}', [TaskController::class, 'tasks'])->middleware('auth:sanctum');
+Route::get('/organizer/events/tasks/{event_id}', [TaskController::class, 'tasks'])->middleware('auth:sanctum');
 Route::get('/organizer/tasks/details/{id}', [TaskController::class, 'tasksDetail'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/create', [TaskController::class, 'createTask'])->middleware('auth:sanctum');
-Route::get('/organizer/tasks/update/{id}', [TaskController::class, 'updateTaskShow'])->middleware('auth:sanctum');
-Route::put('/organizer/tasks/update/{id}', [TaskController::class, 'updateTask'])->middleware('auth:sanctum');
+
+Route::put('/organizer/tasks/update', [TaskController::class, 'updateTask'])->middleware('auth:sanctum');
 Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTask'])->middleware('auth:sanctum');
+
+Route::put('/organizer/tasks/complete', [TaskController::class, 'completeTask'])->middleware('auth:sanctum');
 
 
 
@@ -92,7 +95,10 @@ Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTas
 
 
 // Task Comments
-Route::get('/organizer/tasks/comments/{taskId}', [TaskCommentController::class, 'getTaskComments'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/comments/create/{id}', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
+Route::get('/organizer/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments'])->middleware('auth:sanctum');
+Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment'])->middleware('auth:sanctum');
 Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment'])->middleware('auth:sanctum');
+
+//Task Attachments
+Route::post('/organizer/tasks/attachments/upload', [AttachmentController::class, 'store'])->middleware('auth:sanctum');

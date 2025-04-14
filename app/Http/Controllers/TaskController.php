@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\Event;
 use App\Models\TaskComments;
 use App\Models\members;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
@@ -18,14 +19,12 @@ class TaskController extends Controller
    public function tasks($id){
 
     $user = auth()->user();
-    $tasks = Task::where('organizer_id', $user->id)->where('event_id', $id)->with('user')->get();
 
-    $dependencies = Task::where('organizer_id', $user->id)->pluck('dependencies')->toArray();
-
+    $tasks = Task::where('organizer_id', $user->id)->where('event_id', $id)->with('members.user')->get();
     return response()->json([
         'message' => "Tasks fetched successfully",
         'tasks' => $tasks,
-        'dependencies' => $dependencies
+        
     ]);
 }
 
@@ -53,7 +52,7 @@ public function createTask(Request $request)
         
     ]);
 
-  
+  $assigned_to = null;
 
     if($request->input('assigned_to')) {
         $formData['assigned_to'] = $request->input('assigned_to');
@@ -68,6 +67,8 @@ public function createTask(Request $request)
         }
 
         $formData['assigned_to'] = $member->id;
+
+        $assigned_to = $request->input('assigned_to');
     } 
 
 
@@ -88,20 +89,7 @@ public function createTask(Request $request)
     
     
 
-    // Dependencies check
-    if (isset($formData['dependencies'])) {
-        $dependencies = $formData['dependencies'];
-        
-        foreach ($dependencies as $dependency) {
-            $task = Task::where('title', $dependency)
-            ->first();;
 
-            
-            if (!$task) {
-                return response()->json(['message' => 'Dependency task not found'], 404);
-            }
-        }
-    }
 
     $user = auth()->user();
   
@@ -117,6 +105,7 @@ public function createTask(Request $request)
         'organizer_id' => $user->id,
         'event_id' => $formData['event_id'],
         "budget" => $formData['budget'],
+        "budget_spent" => $formData['budget_spent'],
     ]);
 
     $task->members()->attach($formData['assigned_to']);
@@ -125,22 +114,26 @@ public function createTask(Request $request)
 
     return response()->json([
         'message' => "Task added successfully",
-        'task' => $task
+        'task' => $task,
+        'assigned_to' => $assigned_to,
     ]);
 }
 
 
 
 
-public function updateTaskShow(Request $request, $id){
-    $task = Task::where('id', $id)->get();
-    return $task;
 
-}
+
+
+
+
+
+
+
 
 
 // FUNCTION TO UPDATE A TASK
-public function updateTask(Request $request, $id)
+public function updateTask(Request $request)
 {
     $formData = $request->validate([
         'title' => "required",
@@ -151,15 +144,13 @@ public function updateTask(Request $request, $id)
         'due_date' => "required|date",
         'budget_spent' => "required|integer",
         'assigned_to' => "nullable|string",
-        'event_id' => "required|integer",
         'dependencies' => "nullable|array",
 
         
     ]);
 
-    if($request->input('assigned_to')) {
-        $formData['assigned_to'] = $request->input('assigned_to');
-        $fullName = explode(" ", $formData['assigned_to']);
+    if ($request->input('assigned_to')) {
+        $fullName = explode(" ", $request->input('assigned_to'));
         $firstName = $fullName[0];
         $lastName = $fullName[1];
         $user = User::where('firstName', $firstName)->where('lastName', $lastName)->first();
@@ -168,50 +159,33 @@ public function updateTask(Request $request, $id)
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $formData['assigned_to'] = $user->id;
-    } 
+        $member = members::where('user_id', $user->id)->first();
 
+        if (!$member) {
+            return response()->json(['message' => 'Member not found'], 404);
+        }
 
-
-    $formData['event_id'] = $request->input('event_id');
+        $memberId = $member->id; // Get the member ID
+    }
 
     
-    if (!$formData['event_id']) {
-        return response()->json(['message' => 'Event ID is required'], 400);
-    }
 
-    $event = Event::find($formData['event_id']);
-    if (!$event) {
-        return response()->json(['message' => 'Event not found'], 404);
-    }
+
 
     $formData['dependencies'] = $request->input('dependencies');
     
     
 
-    // Dependencies check
-    if (isset($formData['dependencies'])) {
-        $dependencies = $formData['dependencies'];
-        
-        foreach ($dependencies as $dependency) {
-            $task = Task::where('title', $dependency)
-            ->first();;
-
-            
-            if (!$task) {
-                return response()->json(['message' => 'Dependency task not found'], 404);
-            }
-        }
-    }
+    
 
     // GETTING THE AUTHENTICATED ORGANIZER
     $user = auth()->user();
-  
+    
     // FINDING THE TASK
-    $task = Task::where('id', $id)->where('organizer_id',$user->id)->first();
-    if (!$task) {
-        return response()->json(['message' => 'Task not found'], 404);
-    }
+    $task = Task::where('id', $request->task_id)->where('organizer_id',$user->id)->first();
+    // if (!$task) {
+    //     return response()->json(['message' => 'Task not found'], 404);
+    // }
     // UPDATING THE TASK
     $task->update([
         'title' => $formData['title'],
@@ -219,13 +193,14 @@ public function updateTask(Request $request, $id)
         'status' => $formData['status'],
         'category' => $formData['category'],
         'priority' => $formData['priority'],
-        'assigned_to' => $formData['assigned_to'] ?? null,
         'due_date' => $formData['due_date'],
         'dependencies' => $formData['dependencies'] ?? null,
         'organizer_id' => $user->id,
-        'event_id' => $formData['event_id'],
         "budget_spent" => $formData['budget_spent'],
     ]);
+
+   $task->members()->sync($memberId);
+
     return response()->json([
         'message' => "Task updated successfully",
         'task' => $task
@@ -238,23 +213,40 @@ public function updateTask(Request $request, $id)
 
 
 
+
+
+
+
+
+
+
 //FUNCTION TO DELETE A TASK
 public function deleteTask($id)
 {
+
+     // GETTING THE AUTHENTICATED ORGANIZER
+     $user = auth()->user();
+
+     // FINDING THE TASK
+     $task = Task::where('id', $id)->where('organizer_id', $user->id)->first();
+     if (!$task) {
+         return response()->json(['message' => 'Task not found'], 404);
+     }
  
-    // GETTING THE AUTHENTICATED ORGANIZER
-    $user = auth()->user();
-    // FINDING THE TASK
-    $task = Task::where('id', $id)->where('organizer_id', $user->id)->first();
-    if (!$task) {
-        return response()->json(['message' => 'Task not found'], 404);
-    }
-    // DELETING THE TASK
-    $task->delete();
-    return response()->json([
-        'message' => "Task deleted successfully",
-        'task' => $task
-    ]);
+     // CHECK IF THIS TASK IS A DEPENDENCY FOR ANY OTHER TASK
+     $isDependency = Task::where('dependencies', 'like', '%"' . $task->title . '"%')->exists();
+ 
+     if ($isDependency) {
+         return response()->json(['message' => 'This task cannot be deleted because it is a dependency for another task.'], 400);
+     }
+ 
+     // DELETING THE TASK
+     $task->delete();
+     return response()->json([
+         'message' => "Task deleted successfully",
+         'task' => $task
+     ]);
+ 
 }
 
 
@@ -268,32 +260,52 @@ public function tasksDetail($id)
     
     // GETTING THE AUTHENTICATED ORGANIZER
     $user = auth()->user();
+
+
+    $task = Task::where('id', $id)->with('members.user')
+                                   ->with('user')
+                                  ->with('attachments')
+                                  ->with('taskComments.user')   
+                                  ->with('event')  
+                                  ->get();
    
-   
-    // FINDING THE TASK
-    $task = Task::where('id', $id)->where('organizer_id',$user->id)->first();
-    if (!$task) {
-        return response()->json(['message' => 'Task not found'], 404);
-    }
-
-    // GETTING THE TASK COMMENTS
-    $taskComments = TaskComments::where('task_id', $id)->with('user')->get();
-    if (!$taskComments) {
-        return response()->json(['message' => 'Task comments not found'], 404);
-    }
-
-    $assignedTo = $task->assigned_to;
-    $assignedMemebr = members::where('id', $assignedTo)->with('user')->first();
-
-    return $assignedMemebr;
-
 
     return response()->json([
         'message' => "Task details fetched successfully",
         'task' => $task,
-        'taskComments' => $taskComments
+       
     ]);
 }
 
+
+
+
+// Function to mark as task completed
+
+public function completeTask(){
+    $formData = request()->validate([
+        'task_id' => "required|integer",
+        'status' => "required|string",
+    ]);
+
+    // GETTING THE AUTHENTICATED ORGANIZER
+    $user = auth()->user();
+    
+    // FINDING THE TASK
+    $task = Task::where('id', $formData['task_id'])->where('organizer_id',$user->id)->first();
+    if (!$task) {
+        return response()->json(['message' => 'Task not found'], 404);
+    }
+    // UPDATING THE TASK
+    $task->update([
+        'status' => $formData['status'],
+        
+    ]);
+
+    return response()->json([
+        'message' => "Task updated successfully",
+        'task' => $task
+    ]);
+}
 
 }

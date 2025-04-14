@@ -17,8 +17,9 @@ class EventMediaFactory extends Factory
      */
     public function definition(): array
     {
+        $eventid = Event::pluck('id')->toArray();
         return [
-            'event_id' => Event::factory(),
+            'event_id' => $this->faker->randomElement($eventid),
             'media_type' => $this->faker->randomElement(['image', 'video']),
             'media_url' => $this->faker->imageUrl(),
         ];
