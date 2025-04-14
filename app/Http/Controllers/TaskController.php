@@ -237,20 +237,29 @@ public function updateTask(Request $request)
 public function deleteTask($id)
 {
 
-    
-    // GETTING THE AUTHENTICATED ORGANIZER
-    $user = auth()->user();
-    // FINDING THE TASK
-    $task = Task::where('id', $id)->where('organizer_id', $user->id)->first();
-    if (!$task) {
-        return response()->json(['message' => 'Task not found'], 404);
-    }
-    // DELETING THE TASK
-    $task->delete();
-    return response()->json([
-        'message' => "Task deleted successfully",
-        'task' => $task
-    ]);
+     // GETTING THE AUTHENTICATED ORGANIZER
+     $user = auth()->user();
+
+     // FINDING THE TASK
+     $task = Task::where('id', $id)->where('organizer_id', $user->id)->first();
+     if (!$task) {
+         return response()->json(['message' => 'Task not found'], 404);
+     }
+ 
+     // CHECK IF THIS TASK IS A DEPENDENCY FOR ANY OTHER TASK
+     $isDependency = Task::where('dependencies', 'like', '%"' . $task->title . '"%')->exists();
+ 
+     if ($isDependency) {
+         return response()->json(['message' => 'This task cannot be deleted because it is a dependency for another task.'], 400);
+     }
+ 
+     // DELETING THE TASK
+     $task->delete();
+     return response()->json([
+         'message' => "Task deleted successfully",
+         'task' => $task
+     ]);
+ 
 }
 
 
