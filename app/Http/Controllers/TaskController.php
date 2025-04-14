@@ -162,9 +162,8 @@ public function updateTask(Request $request)
         
     ]);
 
-    if($request->input('assigned_to')) {
-        $formData['assigned_to'] = $request->input('assigned_to');
-        $fullName = explode(" ", $formData['assigned_to']);
+    if ($request->input('assigned_to')) {
+        $fullName = explode(" ", $request->input('assigned_to'));
         $firstName = $fullName[0];
         $lastName = $fullName[1];
         $user = User::where('firstName', $firstName)->where('lastName', $lastName)->first();
@@ -173,10 +172,14 @@ public function updateTask(Request $request)
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $formData['assigned_to'] = $user->id;
-    } 
+        $member = members::where('user_id', $user->id)->first();
 
+        if (!$member) {
+            return response()->json(['message' => 'Member not found'], 404);
+        }
 
+        $memberId = $member->id; // Get the member ID
+    }
 
     
 
@@ -186,20 +189,7 @@ public function updateTask(Request $request)
     
     
 
-    // Dependencies check
-    if (isset($formData['dependencies'])) {
-        $dependencies = $formData['dependencies'];
-        
-        foreach ($dependencies as $dependency) {
-            $task = Task::where('title', $dependency)
-            ->first();;
-
-            
-            if (!$task) {
-                return response()->json(['message' => 'Dependency task not found'], 404);
-            }
-        }
-    }
+    
 
     // GETTING THE AUTHENTICATED ORGANIZER
     $user = auth()->user();
@@ -222,7 +212,8 @@ public function updateTask(Request $request)
         "budget_spent" => $formData['budget_spent'],
     ]);
 
-    $task->members()->sync($formData['assigned_to']);
+   $task->members()->sync($memberId);
+
     return response()->json([
         'message' => "Task updated successfully",
         'task' => $task
