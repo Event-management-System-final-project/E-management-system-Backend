@@ -267,7 +267,7 @@ public function tasksDetail($id)
                                   ->with('attachments')
                                   ->with('taskComments.user')   
                                   ->with('event')  
-                                  ->get();
+                                  ->first();
    
 
     return response()->json([
