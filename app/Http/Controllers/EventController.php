@@ -59,6 +59,22 @@ class EventController extends Controller
         $events = Event::orderBy("created_at", "desc")->take(4)->get()->makeHidden(['created_at', 'updated_at']);
         $featuredEvents = Event::where("featured", true)->take(4)->get()->makeHidden(['created_at', 'updated_at']);
 
+        $eventsWithMedia = $events->map(function ($event) {
+            $eventMedia = EventMedia::where("event_id", $event->id)->first();
+            $event->media_url = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+            return $event;
+        });
+
+        $featuredEventsWithMedia = $featuredEvents->map(function ($event) {
+            $eventMedia = EventMedia::where("event_id", $event->id)->first();
+            $event->media_url = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+            return $event;
+        });
+
+        return [
+            "events" => $eventsWithMedia,
+            "featuredEvents" => $featuredEventsWithMedia,
+        ];
         // foreach($events as $event){
         //     // $image = EventMedia::findOrFail($event->id);
         //     // $imageUrl = asset('storage/' . $image->path);
@@ -69,12 +85,7 @@ class EventController extends Controller
         //     // $imageUrl[$event->id] = asset('storage/' . $image[1]->medial_url);
         // }
 
-        return [
-            "events" => $events,
-            "featuredEvents" => $featuredEvents,
-            // "eventMedia" => $imageUrl
-        ];
-
+       
     }
 
 
