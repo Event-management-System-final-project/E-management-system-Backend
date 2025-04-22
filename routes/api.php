@@ -64,8 +64,8 @@ Route::get('/organizer/analytics/', [EventController::class, 'organizerAnalytics
 //Members Managwement
 Route::get('/organizer/members', [MemberController::class, 'members'])->middleware('auth:sanctum');
 Route::post('/organizer/members/add', [MemberController::class, 'addMember'])->middleware('auth:sanctum');
-Route::post('/organizer/members/remove', [MemberController::class, 'removeMember'])->middleware('auth:sanctum');
-Route::post('/organizer/members/update', [MemberController::class, 'updateMember'])->middleware('auth:sanctum');
+Route::delete('/organizer/members/delete/{id}', [MemberController::class, 'deleteMember'])->middleware('auth:sanctum');
+Route::put('/organizer/members/update', [MemberController::class, 'updateMember'])->middleware('auth:sanctum');
 
 
 // Route::get('/organizer/members/{id}', [UserController::class, 'memberDetails'])->middleware('auth:sanctum');

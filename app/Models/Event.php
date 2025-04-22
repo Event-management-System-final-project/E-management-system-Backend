@@ -21,7 +21,8 @@ class Event extends Model
         "attendees",
         "budget",
         "price",
-        "status",
+        "approval_status",
+        "event_status",
         "featured"
 
     ];

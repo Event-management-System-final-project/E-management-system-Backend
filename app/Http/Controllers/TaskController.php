@@ -14,7 +14,6 @@ class TaskController extends Controller
 {
 
 
-
    //TASK MANAGEMENT
    public function tasks($id){
 

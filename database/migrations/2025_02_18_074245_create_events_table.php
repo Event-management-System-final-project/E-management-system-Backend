@@ -23,7 +23,8 @@ return new class extends Migration
             $table->decimal("price", 8, 2);
             $table->integer("attendees");
             $table->boolean("featured")->default(false);
-            $table->string("status")->nullable();
+            $table->enum("approval_status", ['draft', 'pending', 'approved', 'rejected'])->default('draft');
+            $table->enum("event_status", ['upcoming', 'live', 'completed', 'canceled'])->nullable();
             $table->timestamps();
           
         });
