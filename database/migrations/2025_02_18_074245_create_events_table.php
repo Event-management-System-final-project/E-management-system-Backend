@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('organizer_id')->references('id')->on('users')->onDelete('cascade')->nullable();
             $table->string("title");
             $table->text("description");
+            $table->string("request_type")->default('organizer');
             $table->string("category");
             $table->date("date");
             $table->time("time");
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->boolean("featured")->default(false);
             $table->enum("approval_status", ['draft', 'pending', 'approved', 'rejected'])->default('draft');
             $table->enum("event_status", ['upcoming', 'live', 'completed', 'canceled'])->nullable();
+            $table->date('submitted_date')->default(now());
             $table->timestamps();
           
         });

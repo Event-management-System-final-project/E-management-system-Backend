@@ -20,7 +20,7 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         $organizer = User::where('role', 'organizer')->inRandomOrder()->first();
-        $eventId = Event::where('organizer_id', $organizer->id)->pluck('id')->toArray();
+        $eventId = Event::pluck('id')->toArray();
 
         return [
             "title" => $this->faker->sentence,

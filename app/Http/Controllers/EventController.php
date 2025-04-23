@@ -75,15 +75,7 @@ class EventController extends Controller
             "events" => $eventsWithMedia,
             "featuredEvents" => $featuredEventsWithMedia,
         ];
-        // foreach($events as $event){
-        //     // $image = EventMedia::findOrFail($event->id);
-        //     // $imageUrl = asset('storage/' . $image->path);
-
-        //     // $image = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
-            
-            
-        //     // $imageUrl[$event->id] = asset('storage/' . $image[1]->medial_url);
-        // }
+       
 
        
     }
@@ -111,10 +103,11 @@ class EventController extends Controller
     function featuredEvents(){
         $events = Event::where("featured", true)->paginate(4)->makeHidden(['created_at', 'updated_at']);
 
-        foreach($events as $event){
-            $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
-            $allEventMedia[$event->id] = $eventMedia;
-        }
+        $eventsWithMedia = $events->map(function ($event) {
+            $eventMedia = EventMedia::where("event_id", $event->id)->first();
+            $event->media_url = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+            return $event;
+        });
 
         return [
             "events" => $events,
@@ -206,27 +199,46 @@ class EventController extends Controller
     }
 
 
-    // SHOWING DETAILS OF AN EVENT
+    // SHOWING DETAILS OF AN EVEN
     public function eventDetails(Request $request){
         
-        $event = Event::with('eventMedia')->find($request->id);
-       
+        $event = Event::find($request->id);
     
-        $organizer = Organizer::where('id', $event->organizer_id)->get()->makeHidden(['created_at', 'updated_at']);
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+    
+        $organizer = User::where('id', $event->organizer_id)->get()->makeHidden(['created_at', 'updated_at']);
         
         $tickets = Ticket::where('event_id', $event->id)->get();
-        if ($event->event_media) {
-            $event->event_media->media_url = asset('storage/' . $event->event_media->media_url);
-        }
-        
-
+    
+        $eventMedia = EventMedia::where("event_id", $event->id)->first();
+    
+        $mediaUrl = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+    
+        $eventData = [
+            "id" => $event->id,
+            "title" => $event->title,
+            "description" => $event->description,
+            "location" => $event->location,
+            "category" => $event->category,
+            "date" => $event->date,
+            "time" => $event->time,
+            "price" => $event->price,
+            "attendees" => $event->attendees,
+            "budget" => $event->budget,
+            "featured" => $event->featured,
+            "approval_status" => $event->approval_status,
+            "event_status" => $event->event_status,
+            "media_url" => $mediaUrl,
+        ];
+    
         return [
-            "event" => $event,
+            "event" => $eventData,
             "organizer" => $organizer,
             "tickets" => $tickets
-           
         ];
-
+    
     }
 
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\PasswordReset;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\AdminController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -102,3 +103,8 @@ Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, '
 
 //Task Attachments
 Route::post('/organizer/tasks/attachments/upload', [AttachmentController::class, 'store'])->middleware('auth:sanctum');
+
+
+
+// Admin routes
+Route::get('/admin/event/requests', [AdminController::class, 'eventRequests']);

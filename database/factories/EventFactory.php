@@ -47,6 +47,7 @@ class EventFactory extends Factory
             'organizer_id' => $this->faker->numberBetween(1,2),
             'title' => fake()->word(),
             'description' => fake()->paragraph(),
+            'request_type' => fake()->randomElement(['organizer', 'user']),
             'date' => fake()->date(),
             'time' => fake()->time(),
             'category' => fake()->word(),
