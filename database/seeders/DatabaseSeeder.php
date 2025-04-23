@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             EventMediaSeeder::class,
             TestimonialsSeeder::class,
             TicketSeeder::class,
+            TaskSeeder::class,
         ]);
     }
 }

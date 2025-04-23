@@ -141,6 +141,7 @@ public function updateTask(Request $request)
         'priority' => "required",
         'category' => "required",
         'due_date' => "required|date",
+        'budget' => "required|integer",
         'budget_spent' => "required|integer",
         'assigned_to' => "nullable|string",
         'dependencies' => "nullable|array",
@@ -195,6 +196,7 @@ public function updateTask(Request $request)
         'due_date' => $formData['due_date'],
         'dependencies' => $formData['dependencies'] ?? null,
         'organizer_id' => $user->id,
+        "budget" => $formData['budget'],
         "budget_spent" => $formData['budget_spent'],
     ]);
 

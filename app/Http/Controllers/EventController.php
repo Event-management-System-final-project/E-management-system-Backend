@@ -176,7 +176,7 @@ class EventController extends Controller
     function feedbackShow(){
         $feedbacks = Testimonial::take(10)->get();
         // return $feedbacks;
-
+        $allUser = [];
         foreach($feedbacks as $feedback){
             $user = User::where('id', $feedback->user_id)->first();
             $allUser[$feedback->user_id] = $user;
@@ -209,27 +209,22 @@ class EventController extends Controller
     // SHOWING DETAILS OF AN EVENT
     public function eventDetails(Request $request){
         
-        $event = Event::where('id', $request->id)->first();
+        $event = Event::with('eventMedia')->find($request->id);
        
-        // $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
+    
         $organizer = Organizer::where('id', $event->organizer_id)->get()->makeHidden(['created_at', 'updated_at']);
         
         $tickets = Ticket::where('event_id', $event->id)->get();
-
-        //    // Convert $event to a collection
-        //    $eventCollection = collect($event);
-
-        //    // Convert $eventMedia to a collection
-        //    $eventMediaCollection = collect($eventMedia);
-
-        //    $merged = $eventCollection->merge($eventMediaCollection);
+        if ($event->event_media) {
+            $event->event_media->media_url = asset('storage/' . $event->event_media->media_url);
+        }
+        
 
         return [
             "event" => $event,
-            // "eventMedia" => $eventMedia,
             "organizer" => $organizer,
             "tickets" => $tickets
-            // "eventDetails" => $merged
+           
         ];
 
     }
