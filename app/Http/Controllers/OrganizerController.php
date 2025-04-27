@@ -26,4 +26,7 @@ class OrganizerController extends Controller
 
         return response()->json($event);
     }
+
+
+   
 }

@@ -309,4 +309,17 @@ class EventController extends Controller
             'revenue' => $totalRevenue,
         ]);
     }
+
+    // post events
+    public function publishEvent(Request $request){
+        $event = Event::where("id", $request->event_id)->first();
+        $event->update([
+            'approval_status' => "pending"
+        ]);
+
+        return response()->json([
+            'message' => "Request sent successfully",
+            'events' => $event       
+        ]);
+    }
 }

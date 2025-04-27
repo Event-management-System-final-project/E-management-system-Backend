@@ -74,6 +74,7 @@ Route::put('/organizer/members/update', [MemberController::class, 'updateMember'
 // Route::get('/organizer/members/analytics', [UserController::class, 'membersAnalytics'])->middleware('auth:sanctum');
 // Route::get('/organizer/members/analytics/{id}', [UserController::class, 'memberAnalytics'])->middleware('auth:sanctum');
 
+Route::put("organizer/events/publish", [EventController::class, 'publishEvent'])->middleware('auth:sanctum');
 
 
 
@@ -119,3 +120,5 @@ Route::post('/organizer/events/publish', [EventController::class, 'publishEvent'
 
 // Admin routes
 Route::get('/admin/event/requests', [AdminController::class, 'eventRequests']);
+Route::put('/admin/event/approve', [AdminController::class, 'approveEvent']);
+Route::put('/admin/event/reject', [AdminController::class, 'rejectEvent']);

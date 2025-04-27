@@ -28,4 +28,28 @@ class AdminController extends Controller
         ]);
 
     }
+
+    public function approveEvent(Request $request){
+        $id = $request->event_id;
+        $event = Event::find($id);
+        if ($event) {
+            $event->approval_status = 'approved';
+            $event->save();
+            return response()->json(['message' => 'Event approved successfully']);
+        } else {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+    }
+
+    public function rejectEvent(Request $request){
+        $id = $request->event_id;
+        $event = Event::find($id);
+        if ($event) {
+            $event->approval_status = 'rejected';
+            $event->save();
+            return response()->json(['message' => 'Event rejected successfully']);
+        } else {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+    }
 }
