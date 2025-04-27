@@ -56,8 +56,8 @@ class EventController extends Controller
 
     // SHOWING LIST OF EVENTS
     function eventShow(){
-        $events = Event::orderBy("created_at", "desc")->take(4)->get()->makeHidden(['created_at', 'updated_at']);
-        $featuredEvents = Event::where("featured", true)->take(4)->get()->makeHidden(['created_at', 'updated_at']);
+        $events = Event::where("approval_status", "approved")->orderBy("created_at", "desc")->get()->makeHidden(['created_at', 'updated_at']);
+        $featuredEvents = Event::where("featured", true)->where("approval_status", "approved")->get()->makeHidden(['created_at', 'updated_at']);
 
         $eventsWithMedia = $events->map(function ($event) {
             $eventMedia = EventMedia::where("event_id", $event->id)->first();
@@ -101,7 +101,7 @@ class EventController extends Controller
 
     // FEATURED EVENT DISPLAY
     function featuredEvents(){
-        $events = Event::where("featured", true)->paginate(4)->makeHidden(['created_at', 'updated_at']);
+        $events = Event::where("featured", true)->where("approval_status", "approved")->paginate(4)->makeHidden(['created_at', 'updated_at']);
 
         $eventsWithMedia = $events->map(function ($event) {
             $eventMedia = EventMedia::where("event_id", $event->id)->first();
@@ -185,7 +185,7 @@ class EventController extends Controller
 
     // SHOWING ANLAYTICS FOR EVENTS
     public function eventNumbers(){
-        $numberOfEvents = Event::count();
+        $numberOfEvents = Event::where("approval_status", "approved")->count();
         $numberOfOrganizers = Organizer::count();
         $ticketsSold = Ticket::count();
 

@@ -62,7 +62,7 @@ Route::get('/organizer/events/', [EventController::class, 'organizerEvents'])->m
 // Dashboard Analytics
 Route::get('/organizer/analytics/', [EventController::class, 'organizerAnalytics'])->middleware('auth:sanctum');
 
-//Members Managwement
+//Members Management
 Route::get('/organizer/members', [MemberController::class, 'members'])->middleware('auth:sanctum');
 Route::post('/organizer/members/add', [MemberController::class, 'addMember'])->middleware('auth:sanctum');
 Route::delete('/organizer/members/delete/{id}', [MemberController::class, 'deleteMember'])->middleware('auth:sanctum');
@@ -103,6 +103,17 @@ Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, '
 
 //Task Attachments
 Route::post('/organizer/tasks/attachments/upload', [AttachmentController::class, 'store'])->middleware('auth:sanctum');
+
+
+
+// Subteam task showing
+Route::get('/organizer/subteam/tasks', [TaskController::class, 'subteamTasks'])->middleware('auth:sanctum');
+
+// EVENT PUPLISH
+Route::post('/organizer/events/publish', [EventController::class, 'publishEvent'])->middleware('auth:sanctum');
+
+
+
 
 
 

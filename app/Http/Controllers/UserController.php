@@ -37,6 +37,7 @@ class UserController extends Controller
 
     }
 
+    
     // FUNCTION TO LOGIN A USER
     public function login(Request $request){
     $request->validate([
