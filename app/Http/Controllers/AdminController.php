@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\User;
+use App\Notifications\EventRequestNotification;
+use App\Notifications\EventApproveorRejectNotification;
+use Illuminate\Support\Facades\Notification;
 
 class AdminController extends Controller
 {
@@ -32,9 +35,16 @@ class AdminController extends Controller
     public function approveEvent(Request $request){
         $id = $request->event_id;
         $event = Event::find($id);
+       
+     
         if ($event) {
             $event->approval_status = 'approved';
             $event->save();
+            // Notify the user about the approval
+            $user = User::where("id", $event->organizer_id)->first();
+            Notification::send($user, new EventApproveorRejectNotification($event));
+
+
             return response()->json(['message' => 'Event approved successfully']);
         } else {
             return response()->json(['message' => 'Event not found'], 404);
@@ -47,6 +57,11 @@ class AdminController extends Controller
         if ($event) {
             $event->approval_status = 'rejected';
             $event->save();
+            // Notify the user about the rejection
+            $user = $event->user;
+            Notification::send($user, new EventApproveorRejectNotification($event));
+
+
             return response()->json(['message' => 'Event rejected successfully']);
         } else {
             return response()->json(['message' => 'Event not found'], 404);

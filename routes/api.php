@@ -12,6 +12,7 @@ use App\Http\Controllers\PasswordReset;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserRequestController;
+use App\Http\Controllers\OrganizerController;
 
 
 
@@ -107,6 +108,10 @@ Route::middleware('auth:sanctum')->group(function (){
 
     // Subteam task showing
     Route::get('/organizer/subteam/tasks', [TaskController::class, 'subteamTasks']);
+
+    Route::get('/organizer/notification', [OrganizerController::class, 'organizerNotifications']);
+    Route::post('/organizer/notification/read', [OrganizerController::class, 'markAsRead']);
+    Route::post('/organizer/notification/read/all', [OrganizerController::class, 'markAllAsRead']);
 
 });
 

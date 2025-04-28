@@ -28,7 +28,10 @@ class OrganizerController extends Controller
     }
 
 
-    public function myEvents(Request $request){
-        
+    public function organizerNotifications(){
+        $user = auth()->user();
+        $notifications = $user->notifications;
+
+        return response()->json($notifications);
     }
 }

@@ -9,6 +9,9 @@ use App\Models\eventMedia;
 use App\Models\Testimonial;
 use App\Models\Organizer;
 use App\Models\Ticket;
+use App\Notifications\EventRequestNotification;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\EventApproveorRejectNotification;
 
 class EventController extends Controller
 {
@@ -38,11 +41,26 @@ class EventController extends Controller
             $mediaPath = $media->store('uploads', 'public');
         
         }
-        $event = Event::create($formData);
+        $event = Event::create([
+            'title' => $formData['title'],
+            'description' => $formData['description'],
+            'location' => $formData['location'],
+            'category' => $formData['category'],
+            'date' => $formData['date'],
+            'time' => $formData['time'],
+            'price' => $formData['price'],
+            'attendees' => $formData['attendees'],
+            'budget' => $formData['budget'],
+            'organizer_id' => $formData['organizer_id'],
+            'request_type' => "organizer",
+            'featured' => false,
+        ]);
         $eventMedia = EventMedia::create([
             'event_id' => $event->id,
             'media_url' => $mediaPath
         ]);
+
+
 
         return [
             'message' => "Event created successfully",
@@ -314,6 +332,10 @@ class EventController extends Controller
         $event->update([
             'approval_status' => "pending"
         ]);
+
+        $admin = User::where('role', 'admin')->first();
+
+        Notification::send($admin, new EventRequestNotification($event));
 
         return response()->json([
             'message' => "Request sent successfully",
