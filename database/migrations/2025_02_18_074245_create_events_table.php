@@ -16,13 +16,14 @@ return new class extends Migration
             $table->foreignId('organizer_id')->references('id')->on('users')->onDelete('cascade')->nullable();
             $table->string("title");
             $table->text("description");
-            $table->string("request_type")->default('organizer');
+            $table->string("request_type");
             $table->string("category");
             $table->date("date");
-            $table->time("time");
-            $table->string("location");
-            $table->decimal("price", 8, 2);
+            $table->time("time")->nullable();
+            $table->string("location")->nullable();
+            $table->decimal("price", 8, 2)->nullable();
             $table->integer("attendees");
+            $table->json("requirements")->nullable();
             $table->boolean("featured")->default(false);
             $table->enum("approval_status", ['draft', 'pending', 'approved', 'rejected'])->default('draft');
             $table->enum("event_status", ['upcoming', 'live', 'completed', 'canceled'])->nullable();

@@ -28,5 +28,7 @@ class OrganizerController extends Controller
     }
 
 
-   
+    public function myEvents(Request $request){
+        
+    }
 }

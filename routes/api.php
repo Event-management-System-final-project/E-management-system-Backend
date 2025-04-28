@@ -11,10 +11,9 @@ use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\PasswordReset;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserRequestController;
 
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
+
 
 // User Authentication
 Route::post('/register', [UserController::class, 'register']);
@@ -54,19 +53,11 @@ Route::get("/numbers", [EventController::class, 'eventNumbers']);
 
 
 
-// Organizer Dashboard Routes
 
-// EVENTS CREATED BY AN ORGANIZER
-Route::get('/organizer/events/', [EventController::class, 'organizerEvents'])->middleware('auth:sanctum');
 
-// Dashboard Analytics
-Route::get('/organizer/analytics/', [EventController::class, 'organizerAnalytics'])->middleware('auth:sanctum');
 
-//Members Management
-Route::get('/organizer/members', [MemberController::class, 'members'])->middleware('auth:sanctum');
-Route::post('/organizer/members/add', [MemberController::class, 'addMember'])->middleware('auth:sanctum');
-Route::delete('/organizer/members/delete/{id}', [MemberController::class, 'deleteMember'])->middleware('auth:sanctum');
-Route::put('/organizer/members/update', [MemberController::class, 'updateMember'])->middleware('auth:sanctum');
+
+
 
 
 // Route::get('/organizer/members/{id}', [UserController::class, 'memberDetails'])->middleware('auth:sanctum');
@@ -74,51 +65,65 @@ Route::put('/organizer/members/update', [MemberController::class, 'updateMember'
 // Route::get('/organizer/members/analytics', [UserController::class, 'membersAnalytics'])->middleware('auth:sanctum');
 // Route::get('/organizer/members/analytics/{id}', [UserController::class, 'memberAnalytics'])->middleware('auth:sanctum');
 
-Route::put("organizer/events/publish", [EventController::class, 'publishEvent'])->middleware('auth:sanctum');
 
 
 
 
 
+// Organizer Dashboard Routes
 
-//Task Management
-Route::get('/organizer/events/tasks/{event_id}', [TaskController::class, 'tasks'])->middleware('auth:sanctum');
-Route::get('/organizer/tasks/details/{id}', [TaskController::class, 'tasksDetail'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/create', [TaskController::class, 'createTask'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function (){
+    // EVENTS CREATED BY AN ORGANIZER
+    Route::get('/organizer/events/', [EventController::class, 'organizerEvents']);
 
-Route::put('/organizer/tasks/update', [TaskController::class, 'updateTask'])->middleware('auth:sanctum');
-Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTask'])->middleware('auth:sanctum');
+    // Dashboard Analytics
+    Route::get('/organizer/analytics/', [EventController::class, 'organizerAnalytics']);    
+    //Members Management
+    Route::get('/organizer/members', [MemberController::class, 'members']);
+    Route::post('/organizer/members/add', [MemberController::class, 'addMember']);
+    Route::delete('/organizer/members/delete/{id}', [MemberController::class, 'deleteMember']);
+    Route::put('/organizer/members/update', [MemberController::class, 'updateMember']);
+    // Publish events
+    Route::put("organizer/events/publish", [EventController::class, 'publishEvent']);
 
-Route::put('/organizer/tasks/complete', [TaskController::class, 'completeTask'])->middleware('auth:sanctum');
+    //Task Management
+    Route::get('/organizer/events/tasks/{event_id}', [TaskController::class, 'tasks']);
+    Route::get('/organizer/tasks/details/{id}', [TaskController::class, 'tasksDetail']);
+    Route::post('/organizer/tasks/create', [TaskController::class, 'createTask']);
+    Route::put('/organizer/tasks/update', [TaskController::class, 'updateTask']);
+    Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
 
+    Route::put('/organizer/tasks/complete', [TaskController::class, 'completeTask']);
+    // Task Comments
+    Route::get('/organizer/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments']);
+    Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment']);
+    Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment']);
+    Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment']);
 
-
-
-
-
-// Task Comments
-Route::get('/organizer/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment'])->middleware('auth:sanctum');
-Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment'])->middleware('auth:sanctum');
-
-//Task Attachments
-Route::post('/organizer/tasks/attachments/upload', [AttachmentController::class, 'store'])->middleware('auth:sanctum');
-
-
-
-// Subteam task showing
-Route::get('/organizer/subteam/tasks', [TaskController::class, 'subteamTasks'])->middleware('auth:sanctum');
-
-// EVENT PUPLISH
-Route::post('/organizer/events/publish', [EventController::class, 'publishEvent'])->middleware('auth:sanctum');
-
-
+    //Task Attachments
+    Route::post('/organizer/tasks/attachments/upload', [AttachmentController::class, 'store']);
 
 
 
+    // Subteam task showing
+    Route::get('/organizer/subteam/tasks', [TaskController::class, 'subteamTasks']);
 
-// Admin routes
-Route::get('/admin/event/requests', [AdminController::class, 'eventRequests']);
-Route::put('/admin/event/approve', [AdminController::class, 'approveEvent']);
-Route::put('/admin/event/reject', [AdminController::class, 'rejectEvent']);
+});
+
+
+
+
+
+Route::middleware('auth:sanctum')->group(function (){
+    // Admin routes
+    Route::get('/admin/event/requests', [AdminController::class, 'eventRequests']);
+    Route::put('/admin/event/approve', [AdminController::class, 'approveEvent']);
+    Route::put('/admin/event/reject', [AdminController::class, 'rejectEvent']);
+
+});
+
+
+Route::middleware('auth:sanctum')->group(function (){
+    Route::post('/user/event/request', [UserRequestController::class, 'userRequest']);
+    Route::get('/user/event/request', [UserRequestController::class, 'userRequestShow']);
+});

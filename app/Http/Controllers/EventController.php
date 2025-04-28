@@ -248,24 +248,22 @@ class EventController extends Controller
         $id = auth()->user()->id;
         $events = Event::where('organizer_id', $id)->get();
 
-        $pastEvents = $events->filter(function($events){
-            return str_contains($events->status, 'past');
-        });
+        // $pastEvents = $events->filter(function($events){
+        //     return str_contains($events->status, 'past');
+        // });
 
-        $upcomingEvents = $events->filter(function($events){
-            return str_contains($events->status, 'upcoming');
-        });
+        // $upcomingEvents = $events->filter(function($events){
+        //     return str_contains($events->status, 'upcoming');
+        // });
 
-        $ongoingEvents = $events->filter(function($events){
-            return str_contains($events->status, 'ongoing');
-        });
+        // $ongoingEvents = $events->filter(function($events){
+        //     return str_contains($events->status, 'ongoing');
+        // });
 
 
         return response()->json([
             "events" => $events,
-            "pastEvents" => $pastEvents,
-            "upcomingEvents" => $upcomingEvents,
-            "ongoingEvents" => $ongoingEvents,
+            
         ]);
     }
 
