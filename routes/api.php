@@ -120,6 +120,11 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::put('/admin/event/approve', [AdminController::class, 'approveEvent']);
     Route::put('/admin/event/reject', [AdminController::class, 'rejectEvent']);
 
+    // Admin notification
+    Route::get('/admin/notification', [AdminController::class, 'adminNotification']);
+    Route::post('/admin/notification/read', [AdminController::class, 'markAsRead']);
+    Route::post('/admin/notification/read/all', [AdminController::class, 'markAllAsRead']);
+
 });
 
 

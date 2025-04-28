@@ -52,4 +52,45 @@ class AdminController extends Controller
             return response()->json(['message' => 'Event not found'], 404);
         }
     }
+
+
+    // admin notification
+    public function adminNotification(){
+        $user = auth()->user();
+        $notifications = $user->notifications;
+        return response()->json([
+            'message' => "Notifications retrieved successfully",
+            'notifications' => $notifications
+        ]);
+    }
+
+    // mark as read
+    public function markAsRead(Request $request){
+        $user = auth()->user();
+        $notification = $user->notifications()->where('id', $request->notification_id)->first();
+        if ($notification) {
+            $notification->markAsRead();
+            return response()->json([
+                'message' => "Notification marked as read successfully",
+                'notification' => $notification
+            ]);
+        } else {
+            return response()->json([
+                'message' => "Notification not found"
+            ], 404);
+        }
+    }
+
+    // mark all as read
+    public function markAllAsRead(Request $request){
+        $user = auth()->user();
+        $notifications = $user->unreadNotifications;
+        foreach ($notifications as $notification) {
+            $notification->markAsRead();
+        }
+        return response()->json([
+            'message' => "All notifications marked as read successfully",
+            'notifications' => $notifications
+        ]);
+    }
 }
