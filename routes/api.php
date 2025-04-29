@@ -130,6 +130,12 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/admin/notification/read', [AdminController::class, 'markAsRead']);
     Route::post('/admin/notification/read/all', [AdminController::class, 'markAllAsRead']);
 
+    // list of all users on the
+    Route::get('admin/users', [AdminController::class, 'users']);
+
+    // admin team members
+    Route::post('admin/team/members', [AdminController::class, 'addTeamMembers']);
+
 });
 
 
@@ -137,3 +143,5 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/user/event/request', [UserRequestController::class, 'userRequest']);
     Route::get('/user/event/request', [UserRequestController::class, 'userRequestShow']);
 });
+
+

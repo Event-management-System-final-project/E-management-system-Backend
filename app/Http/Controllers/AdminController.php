@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Notifications\EventRequestNotification;
 use App\Notifications\EventApproveorRejectNotification;
 use Illuminate\Support\Facades\Notification;
+use App\Models\Organizer;
+use App\Models\members;
 
 class AdminController extends Controller
 {
@@ -107,5 +109,50 @@ class AdminController extends Controller
             'message' => "All notifications marked as read successfully",
             'notifications' => $notifications
         ]);
+    }
+
+
+    public function users(){
+        $users = User::where('id', '!=', auth()->user()->id)->get();
+        return response()->json([
+            'message' => "Users retrieved successfully",
+            'users' => $users
+        ]);
+    }
+
+
+    public function addTeamMembers(Request $request){
+       $formData = $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required',
+            'role' => 'required',
+            'password' => 'required',
+        ]);
+
+        $formData['role'] = "AT-".$request->role;
+
+        $user = User::create([
+            'firstName' => $formData['first_name'],
+            'lastName' => $formData['last_name'],
+            'email' => $formData['email'],
+            'role' => $formData['role'],
+            'password' => bcrypt($formData['password']),
+        ]);
+
+        $member = members::create([
+            'user_id' => $user->id,
+            'phone' => $formData['phone'],
+            'organizer_id' => auth()->user()->id,
+        ]);
+
+
+        return response()->json([
+            'message' => "Member added successfully",
+            'user' => $user,
+            'member' => $member
+        ]);
+
     }
 }
