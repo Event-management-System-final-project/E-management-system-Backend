@@ -145,3 +145,9 @@ Route::middleware('auth:sanctum')->group(function (){
 });
 
 
+Route::middleware('auth:sanctum')->group(function (){
+    Route::get('members/assigned/tasks', [MemberController::class, 'assignedTasks']);
+
+});
+
+

@@ -22,6 +22,7 @@ class UserRequestController extends Controller
             'attendess' => "required",
             'budget' => "required",
             'category' => "required",
+            'location' => 'required',
             "requirements" => "required|array",
         ]);
 
@@ -36,6 +37,7 @@ class UserRequestController extends Controller
             'attendees' => $formData['attendess'],
             'budget' => $formData['budget'],
             'category' => $formData['category'],
+            'location' => $formData['location'],
             'requirements' => json_encode($formData['requirements']),
             'approval_status' => 'pending',
             'request_type' => 'user',

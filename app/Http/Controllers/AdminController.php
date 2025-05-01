@@ -74,28 +74,69 @@ class AdminController extends Controller
     // admin notification
     public function adminNotification(){
         $user = auth()->user();
-        $notifications = $user->notifications;
-        return response()->json([
-            'message' => "Notifications retrieved successfully",
-            'notifications' => $notifications
-        ]);
-    }
-
-    // mark as read
-    public function markAsRead(Request $request){
-        $user = auth()->user();
         $notification = $user->notifications()->where('id', $request->notification_id)->first();
         if ($notification) {
             $notification->markAsRead();
             return response()->json([
                 'message' => "Notification marked as read successfully",
-                'notification' => $notification
+                'notification' => $notification,
+                'is_read' => ($notification->read_at !== null), // Send boolean is_read
             ]);
         } else {
             return response()->json([
                 'message' => "Notification not found"
             ], 404);
         }
+
+
+
+
+
+
+        // $user = auth()->user();
+        // $notifications = $user->notifications;
+        // return response()->json([
+        //     'message' => "Notifications retrieved successfully",
+        //     'notifications' => $notifications
+        // ]);
+
+
+    }
+
+    // mark as read
+    public function markAsRead(Request $request){
+        $user = auth()->user();
+        $notifications = $user->unreadNotifications;
+        foreach ($notifications as $notification) {
+            $notification->markAsRead();
+        }
+        return response()->json([
+            'message' => "All notifications marked as read successfully",
+            'notifications' => $notifications->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'is_read' => ($notification->read_at !== null), // Send boolean is_read for each notification
+                ];
+            })
+        ]);
+
+
+
+
+
+        // $user = auth()->user();
+        // $notification = $user->notifications()->where('id', $request->notification_id)->first();
+        // if ($notification) {
+        //     $notification->markAsRead();
+        //     return response()->json([
+        //         'message' => "Notification marked as read successfully",
+        //         'notification' => $notification
+        //     ]);
+        // } else {
+        //     return response()->json([
+        //         'message' => "Notification not found"
+        //     ], 404);
+        // }
     }
 
     // mark all as read

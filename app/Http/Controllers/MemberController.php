@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\members;
 use App\Models\Event;
+use App\Models\Task;
 
 
 class MemberController extends Controller
@@ -161,5 +162,29 @@ class MemberController extends Controller
         User::destroy($id);
 
         return response()->json(['message' => 'Member deleted successfully']);
+    }
+
+
+
+    public function assignedTasks(){
+
+     
+        $user = auth()->user();
+
+        // Check if the user is a member (not an organizer)
+        $member = members::where('user_id', $user->id)->first();
+
+        if (!$member) {
+            return response()->json(['message' => 'You are not a member.'], 403);
+        }
+
+        // Get tasks assigned to the member through the pivot table
+        $tasks = $member->tasks()->with('event')->get();
+
+        return response()->json([
+            'message' => "Tasks fetched successfully",
+            'tasks' => $tasks
+        ]);
+
     }
 }
