@@ -21,13 +21,28 @@ class Event extends Model
         "attendees",
         "budget",
         "price",
-        "status",
+        "request_type",
+        "requirements",
+        "approval_status",
+        "event_status",
         "featured"
 
+    ];
+
+    protected $casts = [
+        'requirements' => 'array',
+        // 'date' => 'date',
+        // 'time' => 'datetime',
+        // 'submitted_date' => 'datetime',
+        // 'featured' => 'boolean',
     ];
 
     public function organizer()
     {
         return $this->belongsTo(User::class);
+    }
+    public function eventMedia()
+    {
+        return $this->hasMany(EventMedia::class);
     }
 }

@@ -15,13 +15,13 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    'paths' => ['api/*'],
 
     'allowed_methods' => ['*'],
 
     'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => ["https://localhost:5173"],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 

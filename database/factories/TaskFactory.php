@@ -19,18 +19,20 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
-        $organizerId = User::where('role', 'organizer')->pluck('id')->toArray();
-        $eventId = Event::where('organizer_id', )->pluck('id')->toArray();
-        // $organizerId = Organizer::pluck('id')->toArray();
+        $organizer = User::where('role', 'organizer')->inRandomOrder()->first();
+        $eventId = Event::pluck('id')->toArray();
+
         return [
-            // "title" => $this->faker->sentence,
-            // "description" => $this->faker->paragraph,
-            // "status" => $this->faker->randomElement(['pending', 'in_progress', 'completed', 'blocked', 'not_started']),
-            // "priority" => $this->faker->randomElement(['low', 'medium', 'high']),
-            // "assigned_to" => $this->faker->randomElement(), 
-            // "deadline" => $this->faker->dateTimeBetween('now', '+1 month'),
-            // "organizer_id" => $this->faker->randomElement($organizerId), 
-            // "event_id" => $this->faker->randomElement($eventId), 
+            "title" => $this->faker->sentence,
+            "category" => $this->faker->word,
+            "description" => $this->faker->paragraph,
+            "budget" => $this->faker->randomFloat(2, 0, 1000),
+            "budget_spent" => $this->faker->randomFloat(2, 0, 1000),
+            "status" => $this->faker->randomElement(['pending', 'in_progress', 'completed', 'blocked', 'not_started']),
+            "priority" => $this->faker->randomElement(['low', 'medium', 'high']),
+            "due_date" => $this->faker->dateTimeBetween('now', '+1 month'),
+            "organizer_id" => $organizer->id, 
+            "event_id" => $this->faker->randomElement($eventId), 
         ];
     }
 }

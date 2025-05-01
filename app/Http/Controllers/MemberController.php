@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\members;
 use App\Models\Event;
+use App\Models\Task;
 
 
 class MemberController extends Controller
@@ -92,6 +93,97 @@ class MemberController extends Controller
             'message' => "Member added successfully",
             'user' => $user,
             'member' => $member
+        ]);
+
+    }
+
+    // FUNCTION TO UPDATE A MEMBER
+    public function updateMember(Request $request)
+    {
+        
+        $formData = $request->validate([
+            'user_id' => "required",
+            'firstName' => "required",
+            'lastName' => "required",
+            'email' => "required|email",
+            'phone' => "required",
+            'role' => "required"
+        ]);
+
+        $formData['role'] = 'OT-'.request('role');
+
+        // Check if the member exists
+        $organizerId = auth()->user()->id;
+       if(!members::where('user_id', $formData['user_id'])->where('organizer_id', $organizerId)->exists()){
+            return response()->json(['message' => 'Member not found'], 404);
+        }
+
+
+        // Update the user record
+        $userToUpdate = User::find($formData['user_id']);
+        if ($userToUpdate) {
+            $userToUpdate->update([
+                'firstName' => $formData['firstName'],
+                'lastName' => $formData['lastName'],
+                'email' => $formData['email'],
+                'role' => $formData['role'],
+            ]);
+        }
+
+        $member = members::where('user_id', $formData['user_id'])->where('organizer_id', $organizerId)->first();
+        // Update the member record
+        $member->update([
+            'phone' => $formData['phone'],
+        ]);
+
+        return response()->json([
+            'message' => "Member updated successfully",
+            'user' => $userToUpdate,
+            'member' => $member
+        ]);
+    }
+
+
+
+    // FUNCTION TO DELETE A MEMBER
+    public function deleteMember($id)
+    {
+        $user = auth()->user();
+        $member = members::where('user_id', $id)->where('organizer_id', $user->id)->first();
+
+        if (!$member) {
+            return response()->json(['message' => 'Member not found'], 404);
+        }
+
+        // Delete the member record
+        $member->delete();
+
+        // Delete the user record
+        User::destroy($id);
+
+        return response()->json(['message' => 'Member deleted successfully']);
+    }
+
+
+
+    public function assignedTasks(){
+
+     
+        $user = auth()->user();
+
+        // Check if the user is a member (not an organizer)
+        $member = members::where('user_id', $user->id)->first();
+
+        if (!$member) {
+            return response()->json(['message' => 'You are not a member.'], 403);
+        }
+
+        // Get tasks assigned to the member through the pivot table
+        $tasks = $member->tasks()->with('event')->get();
+
+        return response()->json([
+            'message' => "Tasks fetched successfully",
+            'tasks' => $tasks
         ]);
 
     }

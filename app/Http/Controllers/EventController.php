@@ -9,6 +9,9 @@ use App\Models\eventMedia;
 use App\Models\Testimonial;
 use App\Models\Organizer;
 use App\Models\Ticket;
+use App\Notifications\EventRequestNotification;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\EventApproveorRejectNotification;
 
 class EventController extends Controller
 {
@@ -38,11 +41,26 @@ class EventController extends Controller
             $mediaPath = $media->store('uploads', 'public');
         
         }
-        $event = Event::create($formData);
+        $event = Event::create([
+            'title' => $formData['title'],
+            'description' => $formData['description'],
+            'location' => $formData['location'],
+            'category' => $formData['category'],
+            'date' => $formData['date'],
+            'time' => $formData['time'],
+            'price' => $formData['price'],
+            'attendees' => $formData['attendees'],
+            'budget' => $formData['budget'],
+            'organizer_id' => $formData['organizer_id'],
+            'request_type' => "organizer",
+            'featured' => false,
+        ]);
         $eventMedia = EventMedia::create([
             'event_id' => $event->id,
             'media_url' => $mediaPath
         ]);
+
+
 
         return [
             'message' => "Event created successfully",
@@ -56,25 +74,28 @@ class EventController extends Controller
 
     // SHOWING LIST OF EVENTS
     function eventShow(){
-        $events = Event::orderBy("created_at", "desc")->take(4)->get()->makeHidden(['created_at', 'updated_at']);
-        $featuredEvents = Event::where("featured", true)->take(4)->get()->makeHidden(['created_at', 'updated_at']);
+        $events = Event::where("approval_status", "approved")->orderBy("created_at", "desc")->get()->makeHidden(['created_at', 'updated_at']);
+        $featuredEvents = Event::where("featured", true)->where("approval_status", "approved")->get()->makeHidden(['created_at', 'updated_at']);
 
-        // foreach($events as $event){
-        //     // $image = EventMedia::findOrFail($event->id);
-        //     // $imageUrl = asset('storage/' . $image->path);
+        $eventsWithMedia = $events->map(function ($event) {
+            $eventMedia = EventMedia::where("event_id", $event->id)->first();
+            $event->media_url = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+            return $event;
+        });
 
-        //     // $image = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
-            
-            
-        //     // $imageUrl[$event->id] = asset('storage/' . $image[1]->medial_url);
-        // }
+        $featuredEventsWithMedia = $featuredEvents->map(function ($event) {
+            $eventMedia = EventMedia::where("event_id", $event->id)->first();
+            $event->media_url = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+            return $event;
+        });
 
         return [
-            "events" => $events,
-            "featuredEvents" => $featuredEvents,
-            // "eventMedia" => $imageUrl
+            "events" => $eventsWithMedia,
+            "featuredEvents" => $featuredEventsWithMedia,
         ];
+       
 
+       
     }
 
 
@@ -98,12 +119,13 @@ class EventController extends Controller
 
     // FEATURED EVENT DISPLAY
     function featuredEvents(){
-        $events = Event::where("featured", true)->paginate(4)->makeHidden(['created_at', 'updated_at']);
+        $events = Event::where("featured", true)->where("approval_status", "approved")->paginate(4)->makeHidden(['created_at', 'updated_at']);
 
-        foreach($events as $event){
-            $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
-            $allEventMedia[$event->id] = $eventMedia;
-        }
+        $eventsWithMedia = $events->map(function ($event) {
+            $eventMedia = EventMedia::where("event_id", $event->id)->first();
+            $event->media_url = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+            return $event;
+        });
 
         return [
             "events" => $events,
@@ -165,7 +187,7 @@ class EventController extends Controller
     function feedbackShow(){
         $feedbacks = Testimonial::take(10)->get();
         // return $feedbacks;
-
+        $allUser = [];
         foreach($feedbacks as $feedback){
             $user = User::where('id', $feedback->user_id)->first();
             $allUser[$feedback->user_id] = $user;
@@ -181,7 +203,7 @@ class EventController extends Controller
 
     // SHOWING ANLAYTICS FOR EVENTS
     public function eventNumbers(){
-        $numberOfEvents = Event::count();
+        $numberOfEvents = Event::where("approval_status", "approved")->count();
         $numberOfOrganizers = Organizer::count();
         $ticketsSold = Ticket::count();
 
@@ -195,32 +217,46 @@ class EventController extends Controller
     }
 
 
-    // SHOWING DETAILS OF AN EVENT
+    // SHOWING DETAILS OF AN EVEN
     public function eventDetails(Request $request){
         
-        $event = Event::where('id', $request->id)->first();
-       
-        // $eventMedia = EventMedia::where("event_id", $event->id)->get()->makeHidden(['created_at', 'updated_at']);
-        $organizer = Organizer::where('id', $event->organizer_id)->get()->makeHidden(['created_at', 'updated_at']);
+        $event = Event::find($request->id);
+    
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+    
+        $organizer = User::where('id', $event->organizer_id)->get()->makeHidden(['created_at', 'updated_at']);
         
         $tickets = Ticket::where('event_id', $event->id)->get();
-
-        //    // Convert $event to a collection
-        //    $eventCollection = collect($event);
-
-        //    // Convert $eventMedia to a collection
-        //    $eventMediaCollection = collect($eventMedia);
-
-        //    $merged = $eventCollection->merge($eventMediaCollection);
-
+    
+        $eventMedia = EventMedia::where("event_id", $event->id)->first();
+    
+        $mediaUrl = $eventMedia ? asset('storage/' . $eventMedia->media_url) : null;
+    
+        $eventData = [
+            "id" => $event->id,
+            "title" => $event->title,
+            "description" => $event->description,
+            "location" => $event->location,
+            "category" => $event->category,
+            "date" => $event->date,
+            "time" => $event->time,
+            "price" => $event->price,
+            "attendees" => $event->attendees,
+            "budget" => $event->budget,
+            "featured" => $event->featured,
+            "approval_status" => $event->approval_status,
+            "event_status" => $event->event_status,
+            "media_url" => $mediaUrl,
+        ];
+    
         return [
-            "event" => $event,
-            // "eventMedia" => $eventMedia,
+            "event" => $eventData,
             "organizer" => $organizer,
             "tickets" => $tickets
-            // "eventDetails" => $merged
         ];
-
+    
     }
 
 
@@ -230,24 +266,22 @@ class EventController extends Controller
         $id = auth()->user()->id;
         $events = Event::where('organizer_id', $id)->get();
 
-        $pastEvents = $events->filter(function($events){
-            return str_contains($events->status, 'past');
-        });
+        // $pastEvents = $events->filter(function($events){
+        //     return str_contains($events->status, 'past');
+        // });
 
-        $upcomingEvents = $events->filter(function($events){
-            return str_contains($events->status, 'upcoming');
-        });
+        // $upcomingEvents = $events->filter(function($events){
+        //     return str_contains($events->status, 'upcoming');
+        // });
 
-        $ongoingEvents = $events->filter(function($events){
-            return str_contains($events->status, 'ongoing');
-        });
+        // $ongoingEvents = $events->filter(function($events){
+        //     return str_contains($events->status, 'ongoing');
+        // });
 
 
         return response()->json([
             "events" => $events,
-            "pastEvents" => $pastEvents,
-            "upcomingEvents" => $upcomingEvents,
-            "ongoingEvents" => $ongoingEvents,
+            
         ]);
     }
 
@@ -289,6 +323,23 @@ class EventController extends Controller
             'events' => $numberOfEvents,
             'tickets' => $ticketsSold,
             'revenue' => $totalRevenue,
+        ]);
+    }
+
+    // post events
+    public function publishEvent(Request $request){
+        $event = Event::where("id", $request->event_id)->first();
+        $event->update([
+            'approval_status' => "pending"
+        ]);
+
+        $admin = User::where('role', 'admin')->first();
+
+        Notification::send($admin, new EventRequestNotification($event));
+
+        return response()->json([
+            'message' => "Request sent successfully",
+            'events' => $event       
         ]);
     }
 }
