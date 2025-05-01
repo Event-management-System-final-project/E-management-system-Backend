@@ -10,6 +10,7 @@ use App\Notifications\EventApproveorRejectNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Organizer;
 use App\Models\members;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -196,4 +197,48 @@ class AdminController extends Controller
         ]);
 
     }
+
+
+    public function getPublishedEvents()
+    {
+        $events = Event::where('approval_status', 'approved')
+            ->with('organizer') // Eager load organizer details
+            ->get();
+
+        $upcomingEventsCount = 0;
+        $pastEventsCount = 0;
+        $liveEventsCount = 0;
+        $canceledEventsCount = 0;
+
+        $events = $events->map(function ($event) use (&$upcomingEventsCount, &$pastEventsCount, &$liveEventsCount) {
+            $now = Carbon::now();
+            $eventDate = Carbon::parse($event->date);
+
+            if ($eventDate->isFuture()) {
+                $event->event_status = 'Upcoming';
+                $upcomingEventsCount++;
+            } elseif ($eventDate->isPast()) {
+                $event->event_status = 'Past';
+                $pastEventsCount++;
+            } else {
+                $event->event_status = 'Live';
+                $liveEventsCount++;
+            }
+
+            // $event->attendees_count = $event->attendees()->count(); // Assuming you have a relationship defined
+
+            return $event;
+        });
+
+        return response()->json([
+            'message' => "Published events retrieved successfully",
+            'events' => $events,
+            'upcomingEventsCount' => $upcomingEventsCount,
+            'pastEventsCount' => $pastEventsCount,
+            'liveEventsCount' => $liveEventsCount,
+            'canceledEventsCount' => $canceledEventsCount,
+        ]);
+    }
+
+
 }

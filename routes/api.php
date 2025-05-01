@@ -139,6 +139,9 @@ Route::middleware('auth:sanctum')->group(function (){
 });
 
 
+
+
+
 Route::middleware('auth:sanctum')->group(function (){
     Route::post('/user/event/request', [UserRequestController::class, 'userRequest']);
     Route::get('/user/event/request', [UserRequestController::class, 'userRequestShow']);
@@ -150,6 +153,7 @@ Route::middleware('auth:sanctum')->group(function (){
 });
 
 
+Route::get('/admin/event/monitoring', [AdminController::class, 'getPublishedEvents']);
 
 
 
