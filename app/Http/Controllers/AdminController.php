@@ -10,6 +10,7 @@ use App\Notifications\EventApproveorRejectNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Organizer;
 use App\Models\members;
+use App\Models\TeamAssignment;
 use Carbon\Carbon;
 
 class AdminController extends Controller
@@ -199,6 +200,59 @@ class AdminController extends Controller
     }
 
 
+    public function deleteTeamMember(Request $request)
+    {
+        $request->validate([
+            'team_member_id' => 'required|exists:users,id',
+        ]);
+
+        $teamMemberId = $request->team_member_id;
+
+        // Find the team member
+        $teamMember = User::find($teamMemberId);
+
+        if (!$teamMember || !str_starts_with($teamMember->role, 'AT-')) {
+            return response()->json([
+                'message' => 'Invalid team member ID.  Must be a user with an AT- role.',
+            ], 400);
+        }
+
+        // Delete any team assignments for this member
+        TeamAssignment::where('team_member_id', $teamMemberId)->delete();
+
+        // Delete the team member
+        $teamMember->delete();
+
+        return response()->json([
+            'message' => 'Team member deleted successfully.',
+        ]);
+    }
+
+
+
+
+    public function showTeamMembers()
+    {
+        $teamMembers = User::where('role', 'LIKE', 'AT-%')
+            ->with(['teamAssignments.event']) // Eager load team assignments and their events
+            ->get()
+            ->map(function ($member) {
+                $member->assigned_events = $member->teamAssignments->map(function ($assignment) {
+                    return $assignment->event; // Extract only the event details
+                });
+                unset($member->teamAssignments); // Remove the teamAssignments relationship to clean up the output
+                return $member;
+            });
+
+        return response()->json([
+            'message' => "Team members retrieved successfully",
+            'teamMembers' => $teamMembers,
+        ]);
+    }
+
+
+
+
     public function getPublishedEvents()
     {
         $events = Event::where('approval_status', 'approved')
@@ -239,6 +293,92 @@ class AdminController extends Controller
             'canceledEventsCount' => $canceledEventsCount,
         ]);
     }
+
+
+    public function assignEventToTeamMember(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'team_member_id' => 'required|exists:users,id',
+        ]);
+
+        $eventId = $request->event_id;
+        $teamMemberId = $request->team_member_id;
+
+        // Check if the user is a team member (AT- role)
+        $teamMember = User::find($teamMemberId);
+        if (!$teamMember || !str_starts_with($teamMember->role, 'AT-')) {
+            return response()->json([
+                'message' => 'Invalid team member ID.  Must be a user with an AT- role.',
+            ], 400);
+        }
+
+        // Check if the event exists and is approved
+        $event = Event::find($eventId);
+        if (!$event || $event->approval_status !== 'pending') {
+            return response()->json([
+                'message' => 'Invalid event ID.  Event must exist and be pending.',
+            ], 400);
+        }
+
+
+        // Check if the assignment already exists
+        $existingAssignment = TeamAssignment::where('event_id', $eventId)
+            ->where('team_member_id', $teamMemberId)
+            ->first();
+
+        if ($existingAssignment) {
+            return response()->json([
+                'message' => 'This team member is already assigned to this event.',
+            ], 409); // Conflict status code
+        }
+
+
+        // Create the team assignment
+        $assignment = TeamAssignment::create([
+            'event_id' => $eventId,
+            'team_member_id' => $teamMemberId,
+            'assigned_by' => auth()->user()->id, // Admin who assigned the event
+        ]);
+
+        return response()->json([
+            'message' => 'Event assigned to team member successfully.',
+            'assignment' => $assignment,
+        ], 201); // Created status code
+    }
+
+
+    public function removeAssignedEvent(Request $request)
+    {
+        return "hello";
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'team_member_id' => 'required|exists:users,id',
+        ]);
+
+        $eventId = $request->event_id;
+        $teamMemberId = $request->team_member_id;
+
+        // Find the team assignment
+        $assignment = TeamAssignment::where('event_id', $eventId)
+            ->where('team_member_id', $teamMemberId)
+            ->first();
+
+        if (!$assignment) {
+            return response()->json([
+                'message' => 'Assignment not found.',
+            ], 404);
+        }
+
+        // Delete the assignment
+        $assignment->delete();
+
+        return response()->json([
+            'message' => 'Event assignment removed successfully.',
+        ]);
+    }
+
+
 
 
 }

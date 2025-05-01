@@ -135,6 +135,14 @@ Route::middleware('auth:sanctum')->group(function (){
 
     // admin team members
     Route::post('admin/team/members', [AdminController::class, 'addTeamMembers']);
+    Route::get('/admin/event/monitoring', [AdminController::class, 'getPublishedEvents']);
+    Route::get('/admin/team', [AdminController::class, 'showTeamMembers']);
+    Route::post('admin/assign/event', [AdminController::class, 'assignEventToTeamMember']);
+
+
+   
+    Route::delete('admin/remove/assigned/event', [AdminController::class, 'removeAssignedEvent']);
+    Route::delete('admin/team/members/{team_member_id}', [AdminController::class, 'deleteTeamMember']);
 
 });
 
@@ -153,7 +161,7 @@ Route::middleware('auth:sanctum')->group(function (){
 });
 
 
-Route::get('/admin/event/monitoring', [AdminController::class, 'getPublishedEvents']);
+
 
 
 

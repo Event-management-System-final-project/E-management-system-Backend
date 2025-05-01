@@ -82,4 +82,9 @@ class User extends Authenticatable implements canResetPassword
     {
         return $this->hasMany(TaskComments::class);
     }
+
+    public function teamAssignments()
+    {
+        return $this->hasMany(TeamAssignment::class, 'team_member_id');
+    }
 }
