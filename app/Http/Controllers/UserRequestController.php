@@ -53,6 +53,8 @@ class UserRequestController extends Controller
         ];
     }
 
+    
+
     public function userRequestShow()
     {
         $user = auth()->user();

@@ -15,6 +15,11 @@ class OrganizerController extends Controller
         return response()->json($events);
     }
 
+
+
+
+    
+
     // Function to get event details for a specific event
     public function eventDetails($eventId)
     {
@@ -28,10 +33,17 @@ class OrganizerController extends Controller
     }
 
 
+
+
+
+
     public function organizerNotifications(){
         $user = auth()->user();
         $notifications = $user->notifications;
 
         return response()->json($notifications);
     }
+
+
+
 }

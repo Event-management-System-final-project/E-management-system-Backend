@@ -107,7 +107,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
 
     // Subteam task showing
-    Route::get('/organizer/subteam/tasks', [TaskController::class, 'subteamTasks']);
+    Route::get('/organizer/subteam/tasks', [MemberController::class, 'assignedTasks']);
 
     Route::get('/organizer/notification', [OrganizerController::class, 'organizerNotifications']);
     Route::post('/organizer/notification/read', [OrganizerController::class, 'markAsRead']);
@@ -142,12 +142,17 @@ Route::middleware('auth:sanctum')->group(function (){
 Route::middleware('auth:sanctum')->group(function (){
     Route::post('/user/event/request', [UserRequestController::class, 'userRequest']);
     Route::get('/user/event/request', [UserRequestController::class, 'userRequestShow']);
+
+    // cart
+    Route::post('user/cart/add', [UserController::class, 'addToCart']);
+    Route::get('user/cart', [UserController::class, 'showCart']);
+    Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
 });
 
 
-Route::middleware('auth:sanctum')->group(function (){
-    Route::get('members/assigned/tasks', [MemberController::class, 'assignedTasks']);
 
-});
+
+
+
 
 
