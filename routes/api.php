@@ -161,7 +161,8 @@ Route::middleware('auth:sanctum')->group(function (){
 });
 
 
-
+Route::get('/branding', [AdminController::class, 'getBranding']);
+Route::post('/branding', [AdminController::class, 'updateBranding']);
 
 
 

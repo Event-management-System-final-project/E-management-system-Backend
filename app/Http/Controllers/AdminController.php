@@ -16,13 +16,13 @@ use Carbon\Carbon;
 class AdminController extends Controller
 {
     public function eventRequests(){
-        $events = Event::where('approval_status', '!=', 'draft')->get();
+        $events = Event::where('approval_status', '!=', 'draft')->with('organizer')->get();
         $total = $events->count();
         $pending = $events->where('approval_status', 'pending')->count();
         $approved = $events->where('approval_status', 'approved')->count();
         $rejected = $events->where('approval_status', 'rejected')->count();
 
-        $user = User::count();
+        $user = User::where('role', 'user')->count();
         $organizer = User::where('role', 'organizer')->count();
         return response()->json([
            "events" => $events,
@@ -157,12 +157,19 @@ class AdminController extends Controller
 
     public function users(){
         $users = User::where('id', '!=', auth()->user()->id)->get();
+        $total = $users->count();
+        $admins = $users->where('role', 'admin')->count();
+        $organizers = $users->where('role', 'organizer')->count();
+        $attendees = $users->where('role', 'user')->count();
+
         return response()->json([
             'message' => "Users retrieved successfully",
             'users' => $users
         ]);
     }
 
+
+    // Admin Team Management
 
     public function addTeamMembers(Request $request){
        $formData = $request->validate([
@@ -253,6 +260,8 @@ class AdminController extends Controller
 
 
 
+
+// event monitoring
     public function getPublishedEvents()
     {
         $events = Event::where('approval_status', 'approved')
@@ -295,6 +304,8 @@ class AdminController extends Controller
     }
 
 
+
+    // Assign event to a team member
     public function assignEventToTeamMember(Request $request)
     {
         $request->validate([
@@ -381,4 +392,63 @@ class AdminController extends Controller
 
 
 
+
+
+    // Platform Branding
+    public function getBranding()
+    {
+        $settings = Setting::whereIn('key', ['platform_name', 'platform_tagline', 'platform_logo'])->get()->pluck('value', 'key');
+
+        return response()->json([
+            'platform_name' => $settings['platform_name'] ?? config('app.name'), // Default to app name
+            'platform_tagline' => $settings['platform_tagline'] ?? '',
+            'platform_logo' => $settings['platform_logo'] ?? '', // You might store the logo path
+        ]);
+    }
+
+    public function updateBranding(Request $request)
+    {
+        $request->validate([
+            'platform_name' => 'nullable|string|max:255',
+            'platform_tagline' => 'nullable|string|max:255',
+            'platform_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Example validation
+        ]);
+
+        // Update platform name
+        if ($request->has('platform_name')) {
+            Setting::updateOrCreate(
+                ['key' => 'platform_name'],
+                ['value' => $request->platform_name]
+            );
+        }
+
+        // Update platform tagline
+        if ($request->has('platform_tagline')) {
+            Setting::updateOrCreate(
+                ['key' => 'platform_tagline'],
+                ['value' => $request->platform_tagline]
+            );
+        }
+
+        // Handle logo upload
+        if ($request->hasFile('platform_logo')) {
+            $image = $request->file('platform_logo');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images/logos'), $imageName); // Store in public/images/logos
+
+            // Save the path to the logo in the settings table
+            Setting::updateOrCreate(
+                ['key' => 'platform_logo'],
+                ['value' => 'images/logos/' . $imageName]
+            );
+        }
+
+        return response()->json([
+            'message' => 'Platform branding updated successfully.',
+        ]);
+    }
+
 }
+
+
+

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
-use App\Models\Cart;
+
 
 class UserController extends Controller
 {
@@ -115,6 +115,8 @@ class UserController extends Controller
     public function showCart()
         {
             $user = auth()->user();
+
+            $ItemsCount = Cart::where('user_id', $user->id)->count();
     
             // Get cart items for the user with event details
             $cartItems = Cart::where('user_id', $user->id)
@@ -123,7 +125,8 @@ class UserController extends Controller
     
             return response()->json([
                 'message' => 'Cart items retrieved successfully',
-                'cart_items' => $cartItems
+                'cart_items' => $cartItems,
+                'items_count' => $ItemsCount,
             ], 200);
         }
     
