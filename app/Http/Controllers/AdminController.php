@@ -74,7 +74,7 @@ class AdminController extends Controller
 
 
     // admin notification
-    public function adminNotification(){
+    public function adminNotification(Request $request){
         $user = auth()->user();
         $notification = $user->notifications()->where('id', $request->notification_id)->first();
         if ($notification) {
