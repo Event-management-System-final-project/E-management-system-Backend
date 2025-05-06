@@ -52,6 +52,7 @@ class EventController extends Controller
             'attendees' => $formData['attendees'],
             'budget' => $formData['budget'],
             'organizer_id' => $formData['organizer_id'],
+            'is_paid_for' => $request->is_paid_for,
             'request_type' => "organizer",
             'featured' => false,
         ]);

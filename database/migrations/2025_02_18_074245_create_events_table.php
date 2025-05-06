@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer("attendees");
             $table->json("requirements")->nullable();
             $table->boolean("featured")->default(false);
+            $table->boolean('is_paid_for')->deafult(true);
             $table->enum("approval_status", ['draft', 'pending', 'approved', 'rejected'])->default('draft');
             $table->enum("event_status", ['upcoming', 'live', 'completed', 'canceled'])->nullable();
             $table->date('submitted_date')->default(now());

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Cart;
 
-
 class UserController extends Controller
 {
     // FUNTION TO REGISTER A USER
@@ -116,8 +115,6 @@ class UserController extends Controller
     public function showCart()
         {
             $user = auth()->user();
-
-            $ItemsCount = Cart::where('user_id', $user->id)->count();
     
             // Get cart items for the user with event details
             $cartItems = Cart::where('user_id', $user->id)
@@ -126,8 +123,7 @@ class UserController extends Controller
     
             return response()->json([
                 'message' => 'Cart items retrieved successfully',
-                'cart_items' => $cartItems,
-                'items_count' => $ItemsCount,
+                'cart_items' => $cartItems
             ], 200);
         }
     

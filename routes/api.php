@@ -13,6 +13,7 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserRequestController;
 use App\Http\Controllers\OrganizerController;
+use App\Http\Controllers\TicketController;
 
 
 
@@ -135,19 +136,8 @@ Route::middleware('auth:sanctum')->group(function (){
 
     // admin team members
     Route::post('admin/team/members', [AdminController::class, 'addTeamMembers']);
-    Route::get('/admin/event/monitoring', [AdminController::class, 'getPublishedEvents']);
-    Route::get('/admin/team', [AdminController::class, 'showTeamMembers']);
-    Route::post('admin/assign/event', [AdminController::class, 'assignEventToTeamMember']);
-
-
-   
-    Route::delete('admin/remove/assigned/event', [AdminController::class, 'removeAssignedEvent']);
-    Route::delete('admin/team/members/{team_member_id}', [AdminController::class, 'deleteTeamMember']);
 
 });
-
-
-
 
 
 Route::middleware('auth:sanctum')->group(function (){
@@ -158,11 +148,15 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('user/cart/add', [UserController::class, 'addToCart']);
     Route::get('user/cart', [UserController::class, 'showCart']);
     Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
+
+    // Ticket buying
+
+    Route::post('initialize/payment', [TicketController::class, 'buy']);
+    
 });
 
+Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');
 
-Route::get('/branding', [AdminController::class, 'getBranding']);
-Route::post('/branding', [AdminController::class, 'updateBranding']);
 
 
 

@@ -25,6 +25,7 @@ class Event extends Model
         "requirements",
         "approval_status",
         "event_status",
+        "is_paid_for",
         "featured"
 
     ];
