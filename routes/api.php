@@ -156,10 +156,3 @@ Route::middleware('auth:sanctum')->group(function (){
 });
 
 Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');
-
-
-
-
-
-
-
