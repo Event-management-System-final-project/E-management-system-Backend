@@ -13,18 +13,18 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("event_id")->references("id")->on("events")->onDelete("cascade");
-            $table->string("ticket_type");
-            $table->string("price");
-            $table->string("qr_code");
-            $table->string("availability_status");
-            $table->timestamps();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('qr_code_path')->nullable();
+            $table->boolean('is_paid_for')->default(false);
+            $table->string('trx_ref')->nullable();      // Chapa transaction reference
+            $table->timestamps(); 
 
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations.`
      */
     public function down(): void
     {

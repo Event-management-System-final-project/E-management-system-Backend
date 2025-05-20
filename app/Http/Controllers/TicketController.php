@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\{Event, Ticket, Payment, TicketRecipient};
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Storage;
+use App\Services\ChapaService;
+
+class TicketController extends Controller
+{
+    protected $chapaService;
+
+    public function __construct(ChapaService $chapaService)
+    {
+        $this->chapaService = $chapaService;
+    }
+
+    public function buy(Request $request)
+    {
+        
+        $user = auth()->user();
+       $event = Event::findOrFail($request->event_id);
+        $recipients = $request->input('recipients', []); // [{type: user}, {type: guest, name: ..., email: ...}]
+         $quantity = count($recipients);
+        if($quantity === 0){
+            $quantity = 1;
+        }
+
+      
+        if ($event->price == 0) {
+            // Free event: Only allow 1 ticket per user
+            $exists = Ticket::where('user_id', $user->id)->where('event_id', $event->id)->exists();
+            if ($exists) {
+                return 'You already claimed a free ticket.';
+            }
+
+            $ticket = $this->createTicket($user->id, $event->id);
+            return 'Free ticket issued.';
+        }
+
+        // Paid event
+        $trx_ref = uniqid('tx_', true);
+        $amount = $event->price * $quantity;
+
+        $data = [
+            'amount' => $amount,
+            'currency' => 'ETB',
+            'email' => $request->input('email'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'tx_ref' => $trx_ref,
+            'callback_url' => route('payment.callback') . '?trx_ref=' . $trx_ref,
+        ];
+
+        $response = $this->chapaService->initializePayment($data);
+
+        if ($response['status'] === 'success') {
+            Payment::create([
+                'user_id' => $user->id,
+                'trx_ref' => $trx_ref,
+                'amount' => $amount,
+                'purpose' => 'ticket',
+                'currency' => 'ETB',
+                'related_id' => $event->id,
+                'status' => 'pending',
+                'meta' => ['recipients' => $recipients],
+            ]);
+        }
+
+        return $response['data']['checkout_url'];
+    }
+
+    public function verifyPayment(Request $request)
+    {
+        $trx_ref = $request->query('trx_ref');
+        $payment = Payment::where('trx_ref', $trx_ref)->firstOrFail();
+
+        $response = $this->chapaService->verifyPayment($trx_ref);
+        
+        if ($response['status'] === 'success' && $payment->status === 'pending') {
+            $payment->update(['status' => 'paid']);
+
+            $event_id = $payment->related_id;
+           $recipients = $payment->meta['recipients'] ?? [];
+
+            foreach ($recipients as $recipient) {
+                if ($recipient['type'] === 'user') {
+                    $this->createTicket($payment->user_id, $event_id, $trx_ref);
+                } elseif ($recipient['type'] === 'guest') {
+                    $this->createTicket(null, $event_id, $trx_ref, $recipient);
+                }
+            }
+
+            return 'Payment verified, tickets issued.';
+        }
+
+        return 'Payment verification failed.';
+    }
+
+    protected function createTicket($user_id, $event_id, $trx_ref = null, $recipientData = null)
+    {
+        $ticket = Ticket::create([
+            'user_id' => $user_id,
+            'event_id' => $event_id,
+            'trx_ref' => $trx_ref,
+        ]);
+
+        if ($recipientData) {
+            TicketRecipient::create([
+                'ticket_id' => $ticket->id,
+                'name' => $recipientData['name'],
+                'email' => $recipientData['email'] ?? null,
+            ]);
+        }
+
+        $qr = QrCode::format('svg')->size(300)->generate("TICKET-{$ticket->id}");
+        $path = "qrcodes/ticket_{$ticket->id}.svg";
+        Storage::put("public/$path", $qr);
+
+        $ticket->update(['qr_code_path' => $path]);
+
+        return $ticket;
+    }
+}
+
