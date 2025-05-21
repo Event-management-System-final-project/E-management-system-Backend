@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('currency');
             $table->unsignedBigInteger('related_id'); // event_id or event_request_id
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
+              $table->json('meta')
+                     ->nullable()
+                    ->after('status');
             $table->timestamps();
         });
     }

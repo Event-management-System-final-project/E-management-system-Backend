@@ -25,10 +25,10 @@ class TicketController extends Controller
         $user = auth()->user();
        $event = Event::findOrFail($request->event_id);
         $recipients = $request->input('recipients', []); // [{type: user}, {type: guest, name: ..., email: ...}]
-         $quantity = count($recipients);
-        if($quantity === 0){
-            $quantity = 1;
-        }
+        //  $quantity = count($recipients);
+        // if($quantity === 0){
+        //     $quantity = 1;
+        // }
 
       
         if ($event->price == 0) {
@@ -44,10 +44,10 @@ class TicketController extends Controller
 
         // Paid event
         $trx_ref = uniqid('tx_', true);
-        $amount = $event->price * $quantity;
+        // $amount = $event->price * $quantity;
 
         $data = [
-            'amount' => $amount,
+            'amount' => $request->input('amount'),
             'currency' => 'ETB',
             'email' => $request->input('email'),
             'first_name' => $request->input('first_name'),
@@ -62,7 +62,7 @@ class TicketController extends Controller
             Payment::create([
                 'user_id' => $user->id,
                 'trx_ref' => $trx_ref,
-                'amount' => $amount,
+                'amount' => $request->input('amount'),
                 'purpose' => 'ticket',
                 'currency' => 'ETB',
                 'related_id' => $event->id,
