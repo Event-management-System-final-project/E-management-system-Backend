@@ -147,8 +147,11 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('user/cart/add', [UserController::class, 'addToCart']);
     Route::get('user/cart', [UserController::class, 'showCart']);
     Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
+    Route::post('initialize/payment', [TicketController::class, 'buy']);
 });
 
+
+Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');
 
 
 
