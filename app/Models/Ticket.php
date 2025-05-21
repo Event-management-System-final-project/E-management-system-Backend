@@ -14,7 +14,8 @@ class Ticket extends Model
             'user_id',
             'is_paid_for',
             'trx_ref',
-            'qr_code_path'
+            'qr_code_path',
+            'ticket_type',
         ];
       
     public function event(){

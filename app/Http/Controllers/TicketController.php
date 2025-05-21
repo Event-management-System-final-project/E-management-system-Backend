@@ -63,6 +63,7 @@ class TicketController extends Controller
                 'user_id' => $user->id,
                 'trx_ref' => $trx_ref,
                 'amount' => $request->input('amount'),
+                'phone' => $request->input('phone'),
                 'purpose' => 'ticket',
                 'currency' => 'ETB',
                 'related_id' => $event->id,
@@ -89,9 +90,9 @@ class TicketController extends Controller
 
             foreach ($recipients as $recipient) {
                 if ($recipient['type'] === 'user') {
-                    $this->createTicket($payment->user_id, $event_id, $trx_ref);
+                    $this->createTicket($payment->user_id, $event_id, $trx_ref, $request->input('ticket_type'));
                 } elseif ($recipient['type'] === 'guest') {
-                    $this->createTicket(null, $event_id, $trx_ref, $recipient);
+                    $this->createTicket(null, $event_id, $trx_ref, $recipient, $request->input('ticket_type'));
                 }
             }
 
@@ -101,12 +102,13 @@ class TicketController extends Controller
         return 'Payment verification failed.';
     }
 
-    protected function createTicket($user_id, $event_id, $trx_ref = null, $recipientData = null)
+    protected function createTicket($user_id, $event_id, $trx_ref = null, $recipientData = null, $ticket_type = null)
     {
         $ticket = Ticket::create([
             'user_id' => $user_id,
             'event_id' => $event_id,
             'trx_ref' => $trx_ref,
+            'ticket_type' => $ticket_type,
         ]);
 
         if ($recipientData) {
@@ -114,6 +116,7 @@ class TicketController extends Controller
                 'ticket_id' => $ticket->id,
                 'name' => $recipientData['name'],
                 'email' => $recipientData['email'] ?? null,
+                'ticket_type' => $ticket_type,
             ]);
         }
 

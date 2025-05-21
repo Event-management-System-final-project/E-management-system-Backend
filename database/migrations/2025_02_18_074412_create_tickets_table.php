@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('qr_code_path')->nullable();
+            $table->string('ticket_type')->nullable(); // e.g. VIP, Regular, etc.
             $table->boolean('is_paid_for')->default(false);
             $table->string('trx_ref')->nullable();      // Chapa transaction reference
             $table->timestamps(); 

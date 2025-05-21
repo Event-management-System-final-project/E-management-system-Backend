@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->string('ticket_type')->nullable();
             $table->string('email')->nullable();
             $table->timestamps();
         });
