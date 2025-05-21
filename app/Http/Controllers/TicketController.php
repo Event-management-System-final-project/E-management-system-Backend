@@ -56,7 +56,7 @@ class TicketController extends Controller
             'callback_url' => route('payment.callback') . '?trx_ref=' . $trx_ref,
         ];
 
-        $response = $this->chapaService->initializePayment($data);
+        return $response = $this->chapaService->initializePayment($data);
 
         if ($response['status'] === 'success') {
             Payment::create([

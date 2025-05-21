@@ -13,6 +13,7 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserRequestController;
 use App\Http\Controllers\OrganizerController;
+use App\Http\Controllers\TicketController;
 
 
 
