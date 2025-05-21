@@ -30,8 +30,8 @@ class EventSeeder extends Seeder
         'attendees' => 100,
         'budget' => 50000,
         'price' => 100,
-        'request_type' => 'internal',
-        'requirements' => ['Projector', 'Catering'],
+        'request_type' => 'organizer',
+      
         'approval_status' => 'approved',
         'event_status' => 'upcoming',
         'featured' => true,
