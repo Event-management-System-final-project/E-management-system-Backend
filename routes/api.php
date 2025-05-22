@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserRequestController;
 use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\PaymentController;
 
 
 
@@ -149,10 +150,15 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('user/cart', [UserController::class, 'showCart']);
     Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
     Route::post('initialize/payment', [TicketController::class, 'buy']);
+    Route::post('initialize/event_request/payment', [PaymentController::class, 'eventRequestPayment']);
 });
 
 
 Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');
+
+
+
+Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
 
 

@@ -28,4 +28,9 @@ class Organizer extends Model
     public function events(){
         return $this->hasMany(Event::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -10,9 +10,61 @@ use App\Notifications\EventApproveorRejectNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Organizer;
 use App\Models\members;
+use App\Models\Payment;
+use Carbon\Carbon;
+
 
 class AdminController extends Controller
 {
+
+     public function index()
+    {
+        $stats = [
+            'totalUsers' => User::count(),
+            'activeEvents' => Event::where('event_status', 'Live')->count(),
+            'pendingRequests' => Event::where('approval_status', 'Pending')->count(),
+            'totalRevenue' => Payment::where('status', 'paid')->sum('amount'),  
+           
+
+        ];
+
+        $eventStatusCounts = [
+            'Upcoming'  => Event::where('event_status', 'Upcoming')->count(),
+            'Live'=> Event::where('approval_status', 'Live')->count(),
+            'Completed' => Event::where('event_status', 'Completed')->count(),
+            'Canceled' => Event::where('event_status' ,'Canceled')->count(),
+        ];
+
+       $recentEvents = Event::with(['organizer']) // eager load the organizer
+                            ->latest()
+                            ->take(5)
+                            ->get()
+                            ->map(function ($event) {
+                            return [
+                                'id' => $event->id,
+                                'title' => $event->title,
+                                'type' => $event->request_type,
+                                'organizer' => $event->organizer->firstName ?? 'N/A', // get name from related User model
+                                'date' => \Carbon\Carbon::parse($event->date)->format('M d, Y'),
+                                'status' => $event->event_status,
+                                'attendees' => $event->tickets()->count(),
+                            ];
+                        });
+
+        return response()->json([
+            'stats' => $stats,
+            'eventStatusCounts' => $eventStatusCounts,
+            'recentEvents' => $recentEvents,
+        ]);
+    }
+
+
+
+
+
+
+
+
     public function eventRequests(){
         $events = Event::where('approval_status', '!=', 'draft')->get();
         $total = $events->count();
@@ -196,4 +248,8 @@ class AdminController extends Controller
         ]);
 
     }
+
+
+
+  
 }

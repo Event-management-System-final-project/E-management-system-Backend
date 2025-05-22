@@ -86,13 +86,13 @@ class TicketController extends Controller
             $payment->update(['status' => 'paid']);
 
             $event_id = $payment->related_id;
-           $recipients = $payment->meta['recipients'] ?? [];
+            $recipients = $payment->meta['recipients'] ?? [];
 
             foreach ($recipients as $recipient) {
                 if ($recipient['type'] === 'user') {
-                    $this->createTicket($payment->user_id, $event_id, $trx_ref, $request->input('ticket_type'));
+                    $this->createTicket($payment->user_id, $event_id, $trx_ref);
                 } elseif ($recipient['type'] === 'guest') {
-                    $this->createTicket(null, $event_id, $trx_ref, $recipient, $request->input('ticket_type'));
+                    $this->createTicket(null, $event_id, $trx_ref, $recipient);
                 }
             }
 
