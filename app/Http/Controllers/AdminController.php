@@ -87,6 +87,7 @@ class AdminController extends Controller
     }
 
     public function approveEvent(Request $request){
+        
         $id = $request->event_id;
         $event = Event::find($id);
        
@@ -105,14 +106,19 @@ class AdminController extends Controller
         }
     }
 
+
+
+
+
     public function rejectEvent(Request $request){
         $id = $request->event_id;
         $event = Event::find($id);
+        
         if ($event) {
             $event->approval_status = 'rejected';
             $event->save();
             // Notify the user about the rejection
-            $user = $event->user;
+            $user = User::where("id", $event->organizer_id)->first();
             Notification::send($user, new EventApproveorRejectNotification($event));
 
 
@@ -123,8 +129,19 @@ class AdminController extends Controller
     }
 
 
+
+
     // admin notification
     public function adminNotification(){
+        $user = auth()->user();
+        $notification = $user->notifications()->get();
+        return response()->json($notification);
+    }
+
+
+
+    // mark as read
+    public function markAsRead(Request $request){
         $user = auth()->user();
         $notification = $user->notifications()->where('id', $request->notification_id)->first();
         if ($notification) {
@@ -139,39 +156,6 @@ class AdminController extends Controller
                 'message' => "Notification not found"
             ], 404);
         }
-
-
-
-
-
-
-        // $user = auth()->user();
-        // $notifications = $user->notifications;
-        // return response()->json([
-        //     'message' => "Notifications retrieved successfully",
-        //     'notifications' => $notifications
-        // ]);
-
-
-    }
-
-    // mark as read
-    public function markAsRead(Request $request){
-        $user = auth()->user();
-        $notifications = $user->unreadNotifications;
-        foreach ($notifications as $notification) {
-            $notification->markAsRead();
-        }
-        return response()->json([
-            'message' => "All notifications marked as read successfully",
-            'notifications' => $notifications->map(function ($notification) {
-                return [
-                    'id' => $notification->id,
-                    'is_read' => ($notification->read_at !== null), // Send boolean is_read for each notification
-                ];
-            })
-        ]);
-
 
 
 
@@ -193,16 +177,25 @@ class AdminController extends Controller
 
     // mark all as read
     public function markAllAsRead(Request $request){
-        $user = auth()->user();
+         $user = auth()->user();
         $notifications = $user->unreadNotifications;
         foreach ($notifications as $notification) {
             $notification->markAsRead();
         }
         return response()->json([
             'message' => "All notifications marked as read successfully",
-            'notifications' => $notifications
+            'notifications' => $notifications->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'is_read' => ($notification->read_at !== null), // Send boolean is_read for each notification
+                ];
+            })
         ]);
     }
+
+
+
+
 
 
     public function users(){

@@ -15,6 +15,7 @@ use App\Http\Controllers\UserRequestController;
 use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\UserNotificationController;
 
 
 
@@ -122,7 +123,9 @@ Route::middleware('auth:sanctum')->group(function (){
 
 
 Route::middleware('auth:sanctum')->group(function (){
-    // Admin routes
+
+
+    // Admin user event management
     Route::get('/admin/event/requests', [AdminController::class, 'eventRequests']);
     Route::put('/admin/event/approve', [AdminController::class, 'approveEvent']);
     Route::put('/admin/event/reject', [AdminController::class, 'rejectEvent']);
@@ -146,6 +149,12 @@ Route::middleware('auth:sanctum')->group(function (){
 });
 
 
+
+
+
+
+
+
 Route::middleware('auth:sanctum')->group(function (){
     Route::post('/user/event/request', [UserRequestController::class, 'userRequest']);
     Route::get('/user/event/request', [UserRequestController::class, 'userRequestShow']);
@@ -157,6 +166,14 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('initialize/payment', [TicketController::class, 'buy']);
     Route::post('initialize/event_request/payment', [PaymentController::class, 'eventRequestPayment']);
     Route::get('user/tickets', [TicketController::class, 'userTicket']);
+
+
+    // User notification
+    Route::get('/user/notification', [UserNotificationController::class, 'index']);
+    Route::post('/user/notification/read', [UserNotificationController::class, 'markAsRead']);
+    Route::post('/user/notification/read/all', [UserNotificationController::class, 'markAllAsRead']);
+    
+  
 });
 
 
