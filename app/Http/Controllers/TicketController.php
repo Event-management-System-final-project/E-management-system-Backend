@@ -10,6 +10,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ChapaService;
 
+
 class TicketController extends Controller
 {
     protected $chapaService;
@@ -68,7 +69,10 @@ class TicketController extends Controller
                 'currency' => 'ETB',
                 'related_id' => $event->id,
                 'status' => 'pending',
-                'meta' => ['recipients' => $recipients],
+                'meta' => [
+                    'recipients' => $recipients,
+                    'ticket_type' => $request->ticket_type,
+                ],
             ]);
         }
 
@@ -87,10 +91,11 @@ class TicketController extends Controller
 
             $event_id = $payment->related_id;
             $recipients = $payment->meta['recipients'] ?? [];
+            $ticket_type = $payment->meta['ticket_type'] ?? null;
 
             foreach ($recipients as $recipient) {
                 if ($recipient['type'] === 'user') {
-                    $this->createTicket($payment->user_id, $event_id, $trx_ref);
+                    $this->createTicket($payment->user_id, $event_id, $trx_ref, null, $ticket_type);
                 } elseif ($recipient['type'] === 'guest') {
                     $this->createTicket(null, $event_id, $trx_ref, $recipient);
                 }
@@ -109,6 +114,7 @@ class TicketController extends Controller
             'event_id' => $event_id,
             'trx_ref' => $trx_ref,
             'ticket_type' => $ticket_type,
+            'is_paid_for' => true,
         ]);
 
         if ($recipientData) {
@@ -117,6 +123,7 @@ class TicketController extends Controller
                 'name' => $recipientData['name'],
                 'email' => $recipientData['email'] ?? null,
                 'ticket_type' => $ticket_type,
+                'is_paid_for' => true,
             ]);
         }
 

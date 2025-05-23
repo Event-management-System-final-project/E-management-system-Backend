@@ -138,6 +138,10 @@ Route::middleware('auth:sanctum')->group(function (){
     // admin team members
     Route::post('admin/team/members', [AdminController::class, 'addTeamMembers']);
 
+    
+    Route::get('/admin/team', [AdminController::class, 'getTeamMembers']);
+
+
 });
 
 
@@ -158,10 +162,10 @@ Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->nam
 
 
 
-Route::get('/admin-dashboard', [AdminController::class, 'index']);
+Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
-
+    Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
 
 
