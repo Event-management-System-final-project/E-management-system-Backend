@@ -39,10 +39,17 @@ class Event extends Model
 
     public function organizer()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'organizer_id');
     }
     public function eventMedia()
     {
         return $this->hasMany(EventMedia::class);
     }
+
+    public function tickets()
+{
+    return $this->hasMany(Ticket::class);
+}
+
+
 }

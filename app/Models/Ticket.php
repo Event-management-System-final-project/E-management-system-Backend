@@ -10,10 +10,21 @@ class Ticket extends Model
     use HasFactory;
 
     protected $fillable = [
-        "event_id",
-        "ticket_type",
-        "price",
-        "qr_code",
-        "availability_status"
-    ];
+            'event_id',
+            'user_id',
+            'is_paid_for',
+            'trx_ref',
+            'qr_code_path',
+            'ticket_type',
+        ];
+      
+    public function event(){
+            return $this->belongsTo(Event::class);
+          }
+      
+    public function user()
+    {
+              return $this->belongsTo(User::class);
+          }
+    
 }

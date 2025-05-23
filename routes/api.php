@@ -13,6 +13,8 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserRequestController;
 use App\Http\Controllers\OrganizerController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\PaymentController;
 
 
 
@@ -136,6 +138,10 @@ Route::middleware('auth:sanctum')->group(function (){
     // admin team members
     Route::post('admin/team/members', [AdminController::class, 'addTeamMembers']);
 
+    
+    Route::get('/admin/team', [AdminController::class, 'getTeamMembers']);
+
+
 });
 
 
@@ -147,11 +153,19 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('user/cart/add', [UserController::class, 'addToCart']);
     Route::get('user/cart', [UserController::class, 'showCart']);
     Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
+    Route::post('initialize/payment', [TicketController::class, 'buy']);
+    Route::post('initialize/event_request/payment', [PaymentController::class, 'eventRequestPayment']);
 });
 
 
+Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');
 
 
+
+Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
+
+
+    Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
 
 

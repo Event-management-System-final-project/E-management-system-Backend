@@ -10,9 +10,61 @@ use App\Notifications\EventApproveorRejectNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Models\Organizer;
 use App\Models\members;
+use App\Models\Payment;
+use Carbon\Carbon;
+
 
 class AdminController extends Controller
 {
+
+     public function index()
+    {
+        $stats = [
+            'totalUsers' => User::count(),
+            'activeEvents' => Event::where('event_status', 'Live')->count(),
+            'pendingRequests' => Event::where('approval_status', 'Pending')->count(),
+            'totalRevenue' => Payment::where('status', 'paid')->sum('amount'),  
+           
+
+        ];
+
+        $eventStatusCounts = [
+            'Upcoming'  => Event::where('event_status', 'Upcoming')->count(),
+            'Live'=> Event::where('approval_status', 'Live')->count(),
+            'Completed' => Event::where('event_status', 'Completed')->count(),
+            'Canceled' => Event::where('event_status' ,'Canceled')->count(),
+        ];
+
+       $recentEvents = Event::with(['organizer']) // eager load the organizer
+                            ->latest()
+                            ->take(5)
+                            ->get()
+                            ->map(function ($event) {
+                            return [
+                                'id' => $event->id,
+                                'title' => $event->title,
+                                'type' => $event->request_type,
+                                'organizer' => $event->organizer->firstName ?? 'N/A', // get name from related User model
+                                'date' => \Carbon\Carbon::parse($event->date)->format('M d, Y'),
+                                'status' => $event->event_status,
+                                'attendees' => $event->tickets()->count(),
+                            ];
+                        });
+
+        return response()->json([
+            'stats' => $stats,
+            'eventStatusCounts' => $eventStatusCounts,
+            'recentEvents' => $recentEvents,
+        ]);
+    }
+
+
+
+
+
+
+
+
     public function eventRequests(){
         $events = Event::where('approval_status', '!=', 'draft')->get();
         $total = $events->count();
@@ -196,4 +248,84 @@ class AdminController extends Controller
         ]);
 
     }
+
+
+
+     public function getTeamMembers(Request $request)
+    {
+        $user = auth()->user(); // get authenticated user
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Get members where organizer_id matches logged in user ID
+        $members = Members::with('user')
+            ->where('organizer_id', $user->id)
+            ->get();
+
+        $result = $members->map(function($member) {
+            return [
+                'member_id' => $member->id,
+                'user_id' => $member->user->id,
+                'firstName' => $member->user->firstName,
+                'lastName' => $member->user->lastName,
+                'email' => $member->user->email,
+                'phone' => $member->phone,
+            ];
+        });
+
+        return response()->json([
+            'teamMembers' => $result,
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+public function eventMonitor(Request $request)
+{
+    // Get all events with organizer relation loaded
+    $events = Event::with('organizer')
+        ->get()
+        ->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'title' => $event->title,
+                'location' => $event->location,
+                'organizer' => [
+                    'firstName' => $event->organizer->firstName ?? ''
+                ],
+                'request_type' => $event->request_type,
+                'date' => $event->date ? Carbon::parse($event->date)->format('M d, Y') : null,
+                'status' => $event->event_status,
+                'attendees' => $event->tickets()->count() ?? 0,
+            ];
+        });
+
+    // Calculate status counts for all events
+    $upcomingEventsCount = $events->where('status', 'upcoming')->count();
+    $liveEventsCount = $events->where('status', 'live')->count();
+    $pastEventsCount = $events->where('status', 'past')->count();
+    $canceledEventsCount = $events->where('status', 'canceled')->count();
+
+    return response()->json([
+        'events' => $events,
+        'upcomingEventsCount' => $upcomingEventsCount,
+        'liveEventsCount' => $liveEventsCount,
+        'pastEventsCount' => $pastEventsCount,
+        'canceledEventsCount' => $canceledEventsCount,
+    ]);
+}
+
+
+
+
+  
 }
