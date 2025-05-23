@@ -140,6 +140,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
     
     Route::get('/admin/team', [AdminController::class, 'getTeamMembers']);
+     Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
 
 });
@@ -155,6 +156,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
     Route::post('initialize/payment', [TicketController::class, 'buy']);
     Route::post('initialize/event_request/payment', [PaymentController::class, 'eventRequestPayment']);
+    Route::get('user/tickets', [TicketController::class, 'userTicket']);
 });
 
 
@@ -165,7 +167,6 @@ Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->nam
 Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
-    Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
 
 

@@ -129,11 +129,30 @@ class TicketController extends Controller
 
         $qr = QrCode::format('svg')->size(300)->generate("TICKET-{$ticket->id}");
         $path = "qrcodes/ticket_{$ticket->id}.svg";
-        Storage::put("public/$path", $qr);
+        Storage::disk('public')->put("/$path", $qr);
 
         $ticket->update(['qr_code_path' => $path]);
 
         return $ticket;
     }
+
+
+
+    public function userTicket()
+{
+    $user = auth()->user();
+
+    $tickets = Ticket::with(['event', 'recipient'])
+                     ->where('user_id', $user->id)
+                     ->get()
+                     ->map(function ($ticket) {
+                         if ($ticket->qr_code_path) {
+                             $ticket->qr_code_path = Storage::url($ticket->qr_code_path);
+                         }
+                         return $ticket;
+                     });
+
+    return response()->json($tickets);
+}
 }
 
