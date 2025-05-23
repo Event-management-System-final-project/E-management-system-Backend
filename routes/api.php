@@ -140,6 +140,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
     
     Route::get('/admin/team', [AdminController::class, 'getTeamMembers']);
+     Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
 
 });
@@ -165,7 +166,6 @@ Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->nam
 Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
-    Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
 
 
