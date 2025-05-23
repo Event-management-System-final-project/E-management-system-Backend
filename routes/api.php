@@ -156,6 +156,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
     Route::post('initialize/payment', [TicketController::class, 'buy']);
     Route::post('initialize/event_request/payment', [PaymentController::class, 'eventRequestPayment']);
+    Route::get('user/tickets', [TicketController::class, 'userTicket']);
 });
 
 

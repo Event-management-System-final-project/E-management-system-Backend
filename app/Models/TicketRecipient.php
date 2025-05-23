@@ -11,4 +11,10 @@ class TicketRecipient extends Model
         'name',
         'ticket_id'
     ];
+
+
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class);
+    }
 }
