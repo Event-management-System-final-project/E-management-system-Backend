@@ -9,6 +9,7 @@ class AttachmentController extends Controller
 {
     public function store(Request $request)
     {
+        
         $request->validate([
             'task_id' => 'required|exists:tasks,id',
             'file' => 'required|file|max:2048',
@@ -22,5 +23,20 @@ class AttachmentController extends Controller
         $attachment->save();
 
         return response()->json(['message' => 'Attachment uploaded successfully']);
+    }
+
+
+
+ 
+    public function show(){
+        $attachments = Attachment::all()->map(function ($attachment) {
+            $attachment->file = asset('storage/' . $attachment->file);
+            return $attachment;
+        });
+
+        return response()->json([
+            'message' => 'Attachments fetched successfully',
+            'attachments' => $attachments
+        ]);
     }
 }

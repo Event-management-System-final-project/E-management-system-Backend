@@ -13,6 +13,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
         $users = [
             [
                 'firstName' => 'Yohannes',
@@ -43,8 +44,14 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        foreach ($users as $user) {
-            User::create($user);
-        }
+        foreach ($users as $userData) {
+            $roleName = $userData['role'];
+             unset($userData['role']);
+
+            $user = User::create($userData);
+            $user->assignRole($roleName); // Spatie assigns existing role
     }
+
+}
+
 }

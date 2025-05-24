@@ -37,8 +37,7 @@ Route::post('/password/reset', [PasswordReset::class, 'resetPassword']);
     Route::get("testimonial", [TestimonialController::class, 'userFeedback']);
 
 
-// CREATE EVENT
-Route::post("events/create", [EventController::class, 'createEvent'])->middleware('auth:sanctum');
+
 
 
 // test file upload
@@ -64,60 +63,43 @@ Route::get("/numbers", [EventController::class, 'eventNumbers']);
 
 
 
-
-
-
-// Route::get('/organizer/members/{id}', [UserController::class, 'memberDetails'])->middleware('auth:sanctum');
-// Route::get('/organizer/members/search/{keyword}', [UserController::class, 'searchMembers'])->middleware('auth:sanctum');
-// Route::get('/organizer/members/analytics', [UserController::class, 'membersAnalytics'])->middleware('auth:sanctum');
-// Route::get('/organizer/members/analytics/{id}', [UserController::class, 'memberAnalytics'])->middleware('auth:sanctum');
-
-
-
-
-
-
 // Organizer Dashboard Routes
 
-Route::middleware('auth:sanctum')->group(function (){
+Route::prefix('organizer')->middleware(['auth:sanctum', 'role:organizer'])->group(function (){
+     // CREATE EVENT
+    Route::post("events/create", [EventController::class, 'createEvent']);
+   
     // EVENTS CREATED BY AN ORGANIZER
-    Route::get('/organizer/events/', [EventController::class, 'organizerEvents']);
+    Route::get('events/', [EventController::class, 'organizerEvents']);
 
     // Dashboard Analytics
-    Route::get('/organizer/analytics/', [EventController::class, 'organizerAnalytics']);    
+    Route::get('analytics/', [EventController::class, 'organizerAnalytics']);    
     //Members Management
-    Route::get('/organizer/members', [MemberController::class, 'members']);
-    Route::post('/organizer/members/add', [MemberController::class, 'addMember']);
-    Route::delete('/organizer/members/delete/{id}', [MemberController::class, 'deleteMember']);
-    Route::put('/organizer/members/update', [MemberController::class, 'updateMember']);
+    Route::get('/members', [MemberController::class, 'members']);
+    Route::post('/members/add', [MemberController::class, 'addMember']);
+    Route::delete('/members/delete/{id}', [MemberController::class, 'deleteMember']);
+    Route::put('/members/update', [MemberController::class, 'updateMember']);
     // Publish events
-    Route::put("organizer/events/publish", [EventController::class, 'publishEvent']);
+    Route::put("/events/publish", [EventController::class, 'publishEvent']);
 
     //Task Management
-    Route::get('/organizer/events/tasks/{event_id}', [TaskController::class, 'tasks']);
-    Route::get('/organizer/tasks/details/{id}', [TaskController::class, 'tasksDetail']);
-    Route::post('/organizer/tasks/create', [TaskController::class, 'createTask']);
-    Route::put('/organizer/tasks/update', [TaskController::class, 'updateTask']);
-    Route::delete('/organizer/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
+    Route::get('/events/tasks/{event_id}', [TaskController::class, 'tasks']);
+    Route::get('/tasks/details/{id}', [TaskController::class, 'tasksDetail']);
+    Route::post('/tasks/create', [TaskController::class, 'createTask']);
+    Route::put('/tasks/update', [TaskController::class, 'updateTask']);
+    Route::delete('/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
 
-    Route::put('/organizer/tasks/complete', [TaskController::class, 'completeTask']);
-    // Task Comments
-    Route::get('/organizer/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments']);
-    Route::post('/organizer/tasks/comments/create', [TaskCommentController::class, 'createTaskComment']);
-    Route::post('/organizer/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment']);
-    Route::post('/organizer/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment']);
-
-    //Task Attachments
-    Route::post('/organizer/tasks/attachments/upload', [AttachmentController::class, 'store']);
+    Route::put('/tasks/complete', [TaskController::class, 'completeTask']);
 
 
+    
 
     // Subteam task showing
-    Route::get('/organizer/subteam/tasks', [MemberController::class, 'assignedTasks']);
+    Route::get('/subteam/tasks', [MemberController::class, 'assignedTasks']);
 
-    Route::get('/organizer/notification', [OrganizerController::class, 'organizerNotifications']);
-    Route::post('/organizer/notification/read', [OrganizerController::class, 'markAsRead']);
-    Route::post('/organizer/notification/read/all', [OrganizerController::class, 'markAllAsRead']);
+    Route::get('/notification', [OrganizerController::class, 'organizerNotifications']);
+    Route::post('/notification/read', [OrganizerController::class, 'markAsRead']);
+    Route::post('/notification/read/all', [OrganizerController::class, 'markAllAsRead']);
 
 });
 
@@ -125,29 +107,30 @@ Route::middleware('auth:sanctum')->group(function (){
 
 
 
-Route::middleware('auth:sanctum')->group(function (){
+Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(function (){
     Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
     // Admin user event management
-    Route::get('/admin/event/requests', [AdminController::class, 'eventRequests']);
-    Route::put('/admin/event/approve', [AdminController::class, 'approveEvent']);
-    Route::put('/admin/event/reject', [AdminController::class, 'rejectEvent']);
+    Route::get('/event/requests', [AdminController::class, 'eventRequests']);
+    Route::put('/event/approve', [AdminController::class, 'approveEvent']);
+    Route::put('/event/reject', [AdminController::class, 'rejectEvent']);
 
     // Admin notification
-    Route::get('/admin/notification', [AdminController::class, 'adminNotification']);
-    Route::post('/admin/notification/read', [AdminController::class, 'markAsRead']);
-    Route::post('/admin/notification/read/all', [AdminController::class, 'markAllAsRead']);
+    Route::get('/notification', [AdminController::class, 'adminNotification']);
+    Route::post('/notification/read', [AdminController::class, 'markAsRead']);
+    Route::post('/notification/read/all', [AdminController::class, 'markAllAsRead']);
 
     // list of all users on the
-    Route::get('admin/users', [AdminController::class, 'users']);
+    Route::get('/users', [AdminController::class, 'users']);
 
     // admin team members
-    Route::post('admin/team/members', [AdminController::class, 'addTeamMembers']);
-    Route::post('admin/assign/team', [EventTeamAssignmentController::class, 'assignTeamLeader']);
-    Route::get('admin/assigned/events', [EventTeamAssignmentController::class, 'getEventsWithAssignedUsers']);
+    Route::post('/team/members', [AdminController::class, 'addTeamMembers']);
+    Route::post('/assign/team', [EventTeamAssignmentController::class, 'assignTeamLeader']);
+    Route::get('/assigned/events', [EventTeamAssignmentController::class, 'getEventsWithAssignedUsers']);
+    Route::get('paid/events', [UserRequestController::class, 'paidEvents']);
 
     
-    Route::get('/admin/team', [AdminController::class, 'getTeamMembers']);
+    Route::get('/team', [AdminController::class, 'getTeamMembers']);
     
 
 
@@ -160,29 +143,62 @@ Route::middleware('auth:sanctum')->group(function (){
 
 
 
-Route::middleware('auth:sanctum')->group(function (){
-    Route::post('/user/event/request', [UserRequestController::class, 'userRequest']);
-    Route::get('/user/event/request', [UserRequestController::class, 'userRequestShow']);
+Route::prefix('user')->middleware(['auth:sanctum', 'role:user'])->group(function (){
+    Route::post('/event/request', [UserRequestController::class, 'userRequest']);
+    Route::get('/event/request', [UserRequestController::class, 'userRequestShow']);
 
     // cart
-    Route::post('user/cart/add', [UserController::class, 'addToCart']);
-    Route::get('user/cart', [UserController::class, 'showCart']);
-    Route::delete('user/cart/remove', [UserController::class, 'removeFromCart']);
-    Route::post('initialize/payment', [TicketController::class, 'buy']);
-    Route::post('initialize/event_request/payment', [PaymentController::class, 'eventRequestPayment']);
-    Route::get('user/tickets', [TicketController::class, 'userTicket']);
+    Route::post('/cart/add', [UserController::class, 'addToCart']);
+    Route::get('/cart', [UserController::class, 'showCart']);
+    Route::delete('/cart/remove', [UserController::class, 'removeFromCart']);
+    Route::post('/initialize/payment', [TicketController::class, 'buy']);
+    Route::post('/initialize/event_request/payment', [PaymentController::class, 'eventRequestPayment']);
+    Route::get('/tickets', [TicketController::class, 'userTicket']);
 
 
     // User notification
-    Route::get('/user/notification', [UserNotificationController::class, 'index']);
-    Route::post('/user/notification/read', [UserNotificationController::class, 'markAsRead']);
-    Route::post('/user/notification/read/all', [UserNotificationController::class, 'markAllAsRead']);
+    Route::get('/notification', [UserNotificationController::class, 'index']);
+    Route::post('/notification/read', [UserNotificationController::class, 'markAsRead']);
+    Route::post('/notification/read/all', [UserNotificationController::class, 'markAllAsRead']);
 
 
 
     
   
 });
+
+
+
+
+
+
+
+
+
+
+
+Route::group(['middleware' => ['auth:sanctum', 'role:organizer|OT']], function () {
+     // Task Comments
+    Route::get('/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments']);
+    Route::post('/tasks/comments/create', [TaskCommentController::class, 'createTaskComment']);
+    Route::post('/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment']);
+    Route::post('/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment']);
+
+    //Task Attachments
+    Route::post('/tasks/attachments/upload', [AttachmentController::class, 'store']);
+    Route::get('/tasks/attachments', [AttachmentController::class, 'show']);
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');

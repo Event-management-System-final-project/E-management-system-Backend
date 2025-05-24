@@ -38,7 +38,7 @@ class TaskCommentController extends Controller
         public function createTaskComment(Request $request)
         {
 
-            return auth()->user();
+
             // Validate the request data
             $request->validate([
                 'comment' => 'required|string|max:255',
@@ -53,7 +53,7 @@ class TaskCommentController extends Controller
          
             // Create a new task comment
             $taskComment = TaskComments::create([
-                'task_id' => $id,
+                'task_id' => $request->task_id,
                 'comment' => $request->comment,
                 'user_id' => auth()->user()->id,
             ]);
