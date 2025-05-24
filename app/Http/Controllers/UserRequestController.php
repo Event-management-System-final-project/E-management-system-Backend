@@ -65,4 +65,21 @@ class UserRequestController extends Controller
             'events' => $events
         ];
     }
+
+
+
+    public function userRequestedPaidEvents(Request $request)
+{
+    $user = $request->user();
+
+    $events = Event::where('request_type', 'user')
+        ->whereHas('payments', function ($query) {
+            $query->where('status', 'paid'); // Assuming 'status' column indicates payment status
+        })
+        ->get();
+
+    return response()->json(['paidEvents' => $events]);
+}
+
+
 }

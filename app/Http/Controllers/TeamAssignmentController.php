@@ -63,5 +63,8 @@ class TeamAssignmentController extends Controller
             'assigned' => $event->members()->pluck('members.id'),
         ]);
     }
+
+
+    
 }
 

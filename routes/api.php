@@ -198,6 +198,14 @@ Route::get('/qr-code/{filename}', [QrCodeController::class, 'serve']);
 
 
 
+
+
+
+
+
+
+
+
 Route::post('/ticket/generate', [TestController::class, 'generateTicketQrCode']);
 
 
