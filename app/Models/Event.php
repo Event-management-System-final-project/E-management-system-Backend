@@ -52,4 +52,10 @@ class Event extends Model
 }
 
 
+public function eventTeamAssignments()
+{
+    return $this->belongsToMany(User::class, 'event_team_assignments', 'event_id', 'team_member_id');
+}
+
+
 }

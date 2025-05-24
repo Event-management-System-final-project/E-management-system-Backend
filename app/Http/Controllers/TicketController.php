@@ -153,7 +153,7 @@ class TicketController extends Controller
                      ->get()
                      ->map(function ($ticket) {
                          if ($ticket->qr_code_path) {
-                             $ticket->qr_code_url = asset(Storage::url($ticket->qr_code_path));
+                             $ticket->qr_code_peth = asset(Storage::url($ticket->qr_code_path));
                          }
                          return $ticket;
                      });
