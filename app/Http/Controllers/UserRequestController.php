@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Payment;
 use App\Notifications\EventRequestNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\UserEventRequestNotification;
@@ -43,7 +44,7 @@ class UserRequestController extends Controller
             'request_type' => 'user',
         ]);
 
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::role('admin')->first();
 
         Notification::send($admin, new UserEventRequestNotification($event));
 
@@ -68,10 +69,9 @@ class UserRequestController extends Controller
 
 
 
-    public function userRequestedPaidEvents(Request $request)
+    public function paidEvents(Request $request)
 {
-    $user = $request->user();
-
+  
     $events = Event::where('request_type', 'user')
         ->whereHas('payments', function ($query) {
             $query->where('status', 'paid'); // Assuming 'status' column indicates payment status

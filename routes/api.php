@@ -66,8 +66,9 @@ Route::get("/numbers", [EventController::class, 'eventNumbers']);
 // Organizer Dashboard Routes
 
 Route::prefix('organizer')->middleware(['auth:sanctum', 'role:organizer'])->group(function (){
-    // CREATE EVENT
+     // CREATE EVENT
     Route::post("events/create", [EventController::class, 'createEvent']);
+   
     // EVENTS CREATED BY AN ORGANIZER
     Route::get('events/', [EventController::class, 'organizerEvents']);
 
@@ -89,16 +90,9 @@ Route::prefix('organizer')->middleware(['auth:sanctum', 'role:organizer'])->grou
     Route::delete('/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
 
     Route::put('/tasks/complete', [TaskController::class, 'completeTask']);
-    // Task Comments
-    Route::get('/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments']);
-    Route::post('/tasks/comments/create', [TaskCommentController::class, 'createTaskComment']);
-    Route::post('/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment']);
-    Route::post('/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment']);
-
-    //Task Attachments
-    Route::post('/tasks/attachments/upload', [AttachmentController::class, 'store']);
 
 
+    
 
     // Subteam task showing
     Route::get('/subteam/tasks', [MemberController::class, 'assignedTasks']);
@@ -133,6 +127,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
     Route::post('/team/members', [AdminController::class, 'addTeamMembers']);
     Route::post('/assign/team', [EventTeamAssignmentController::class, 'assignTeamLeader']);
     Route::get('/assigned/events', [EventTeamAssignmentController::class, 'getEventsWithAssignedUsers']);
+    Route::get('paid/events', [UserRequestController::class, 'paidEvents']);
 
     
     Route::get('/team', [AdminController::class, 'getTeamMembers']);
@@ -171,6 +166,39 @@ Route::prefix('user')->middleware(['auth:sanctum', 'role:user'])->group(function
     
   
 });
+
+
+
+
+
+
+
+
+
+
+
+Route::group(['middleware' => ['auth:sanctum', 'role:organizer|OT']], function () {
+     // Task Comments
+    Route::get('/tasks/comments/{task_id}', [TaskCommentController::class, 'getTaskComments']);
+    Route::post('/tasks/comments/create', [TaskCommentController::class, 'createTaskComment']);
+    Route::post('/tasks/comments/delete', [TaskCommentController::class, 'deleteTaskComment']);
+    Route::post('/tasks/comments/update', [TaskCommentController::class, 'updateTaskComment']);
+
+    //Task Attachments
+    Route::post('/tasks/attachments/upload', [AttachmentController::class, 'store']);
+    Route::get('/tasks/attachments', [AttachmentController::class, 'show']);
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');

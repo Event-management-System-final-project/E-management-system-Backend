@@ -14,7 +14,7 @@ class MemberController extends Controller
     public function members()
     {
         // GETTING THE AUTHENTICATED ORGANIZER
-        $user = auth()->user();
+         $user = auth()->user();
         
         // GETTING THE ORGANIZER'S MEMBERS
         $members = members::where('organizer_id', $user->id)->with('user')->get();
@@ -60,7 +60,7 @@ class MemberController extends Controller
             'role' => "required"
         ]);
 
-        $formData['role'] = 'OT-'.request('role');
+        // $formData['role'] = 'OT-'.request('role');
        
 
         if (User::where('email', $formData['email'])->exists()) {
@@ -72,8 +72,9 @@ class MemberController extends Controller
             'lastName' => $formData['lastName'],
             'email' => $formData['email'],
             'password' => bcrypt($formData['password']),
-            'role' => $formData['role'],
         ]);
+
+        $user->assignRole('OT'); // Assign the role to the user
 
         // Create a new member record
         $userId = $user->id;
