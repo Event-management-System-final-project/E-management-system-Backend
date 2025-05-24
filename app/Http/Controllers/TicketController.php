@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\{Event, Ticket, Payment, TicketRecipient};
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ChapaService;
 use App\Notifications\TicketPurchaseNotification;
@@ -131,11 +130,6 @@ class TicketController extends Controller
         $user = User::where("id", $user_id)->first();
         Notification::send($user, new TicketPurchaseNotification($ticket));
 
-        $qr = QrCode::format('svg')->size(300)->generate("TICKET-{$ticket->id}");
-        $path = "qrcodes/ticket_{$ticket->id}.svg";
-        Storage::disk('public')->put("/$path", $qr);
-
-        $ticket->update(['qr_code_path' => $path]);
 
         return $ticket;
     }
@@ -150,13 +144,7 @@ class TicketController extends Controller
 
     $tickets = Ticket::with(['event', 'recipient'])
         ->where('user_id', $user->id)
-        ->whereNotNull('qr_code_path')
         ->get()
-        ->map(function ($ticket) {
-            $filename = basename($ticket->qr_code_path);
-            $ticket->qr_code_path = url("/api/qr-code/{$filename}");
-            return $ticket;
-        });
 
     return response()->json($tickets);
 }

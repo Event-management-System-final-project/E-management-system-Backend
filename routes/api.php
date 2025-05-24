@@ -210,18 +210,8 @@ Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
 Route::middleware('auth:sanctum')->get('team/assigned/events', [EventTeamAssignmentController::class, 'getEventsAssignedToUser']);
-Route::get('/qr-code/{filename}', [QrCodeController::class, 'serve']);
 
 
 
-
-
-
-
-
-
-
-
-Route::post('/ticket/generate', [TestController::class, 'generateTicketQrCode']);
 
 
