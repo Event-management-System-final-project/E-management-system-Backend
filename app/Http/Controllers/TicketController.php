@@ -144,21 +144,24 @@ class TicketController extends Controller
 
 
 
-    public function userTicket()
+  public function userTicket()
 {
     $user = auth()->user();
 
-     $tickets = Ticket::with(['event', 'recipient'])
-                     ->where('user_id', $user->id)
-                     ->get()
-                     ->map(function ($ticket) {
-                         if ($ticket->qr_code_path) {
-                             $ticket->qr_code_url = asset(Storage::url($ticket->qr_code_path));
-                         }
-                         return $ticket;
-                     });
+    $tickets = Ticket::with(['event', 'recipient'])
+        ->where('user_id', $user->id)
+        ->whereNotNull('qr_code_path')
+        ->get()
+        ->map(function ($ticket) {
+            $filename = basename($ticket->qr_code_path);
+            $ticket->qr_code_path = url("/api/qr-code/{$filename}");
+            return $ticket;
+        });
 
     return response()->json($tickets);
 }
+
+
+
 }
 

@@ -16,6 +16,9 @@ use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserNotificationController;
+use App\Http\Controllers\EventTeamAssignmentController;
+use App\Http\Controllers\QrCodeController;
+use App\Http\Controllers\TestController;
 
 
 
@@ -123,7 +126,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
 
 Route::middleware('auth:sanctum')->group(function (){
-
+    Route::get('/admin-dashboard', [AdminController::class, 'index']);
 
     // Admin user event management
     Route::get('/admin/event/requests', [AdminController::class, 'eventRequests']);
@@ -140,10 +143,12 @@ Route::middleware('auth:sanctum')->group(function (){
 
     // admin team members
     Route::post('admin/team/members', [AdminController::class, 'addTeamMembers']);
+    Route::post('admin/assign/team', [EventTeamAssignmentController::class, 'assignTeamLeader']);
+    Route::get('admin/assigned/events', [EventTeamAssignmentController::class, 'getEventsWithAssignedUsers']);
 
     
     Route::get('/admin/team', [AdminController::class, 'getTeamMembers']);
-     Route::get('/admin-dashboard', [AdminController::class, 'index']);
+    
 
 
 });
@@ -172,6 +177,9 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/user/notification', [UserNotificationController::class, 'index']);
     Route::post('/user/notification/read', [UserNotificationController::class, 'markAsRead']);
     Route::post('/user/notification/read/all', [UserNotificationController::class, 'markAllAsRead']);
+
+
+
     
   
 });
@@ -185,6 +193,11 @@ Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
 
+Route::middleware('auth:sanctum')->get('team/assigned/events', [EventTeamAssignmentController::class, 'getEventsAssignedToUser']);
+Route::get('/qr-code/{filename}', [QrCodeController::class, 'serve']);
 
+
+
+Route::post('/ticket/generate', [TestController::class, 'generateTicketQrCode']);
 
 

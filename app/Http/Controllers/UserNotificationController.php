@@ -18,9 +18,9 @@ class UserNotificationController extends Controller
 
     
     // mark notification as read
-    public function markAsRead(Request $request, $id){
+    public function markAsRead(Request $request){
         $user = auth()->user();
-        $notification = $user->notifications()->where('id', $id)->first();
+        $notification = $user->notifications()->where('id', $request->id)->first();
         if($notification){
             $notification->markAsRead();
             return response()->json(['message' => 'Notification marked as read']);
