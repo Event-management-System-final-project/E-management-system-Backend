@@ -20,7 +20,7 @@ class UserController extends Controller
             'lastName' => "required",
             'email' => "required|email",
             'password' => "required|confirmed",
-            'role' => "required"
+            
 
         ]);
 
@@ -29,6 +29,7 @@ class UserController extends Controller
         }
 
         $user = User::create($formData);
+        $user->assignRole($formData['role']);
 
        
 

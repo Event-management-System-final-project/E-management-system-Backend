@@ -71,6 +71,7 @@ class MemberController extends Controller
             'firstName' => $formData['firstName'],
             'lastName' => $formData['lastName'],
             'email' => $formData['email'],
+            'custom_role' => $formData['role'], // Assigning the role with OT prefix
             'password' => bcrypt($formData['password']),
         ]);
 
