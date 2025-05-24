@@ -17,6 +17,8 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Controllers\EventTeamAssignmentController;
+use App\Http\Controllers\QrCodeController;
+use App\Http\Controllers\TestController;
 
 
 
@@ -192,5 +194,10 @@ Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
 Route::middleware('auth:sanctum')->get('team/assigned/events', [EventTeamAssignmentController::class, 'getEventsAssignedToUser']);
+Route::get('/qr-code/{filename}', [QrCodeController::class, 'serve']);
+
+
+
+Route::post('/ticket/generate', [TestController::class, 'generateTicketQrCode']);
 
 
