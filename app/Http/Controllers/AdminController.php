@@ -217,15 +217,17 @@ class AdminController extends Controller
             'password' => 'required',
         ]);
 
-        $formData['role'] = "AT-".$request->role;
+      
 
         $user = User::create([
             'firstName' => $formData['first_name'],
             'lastName' => $formData['last_name'],
             'email' => $formData['email'],
-            'role' => $formData['role'],
+            'custom_role' => $formData['role'],
             'password' => bcrypt($formData['password']),
         ]);
+
+        $user->assignRole('AT'); // Assign the role to the user
 
         $member = members::create([
             'user_id' => $user->id,
