@@ -73,23 +73,28 @@ Route::prefix('organizer')->middleware(['auth:sanctum', 'role:organizer'])->grou
     Route::get('events/', [EventController::class, 'organizerEvents']);
 
     // Dashboard Analytics
-    Route::get('analytics/', [EventController::class, 'organizerAnalytics']);    
-    //Members Management
-    Route::get('/members', [MemberController::class, 'members']);
-    Route::post('/members/add', [MemberController::class, 'addMember']);
-    Route::delete('/members/delete/{id}', [MemberController::class, 'deleteMember']);
-    Route::put('/members/update', [MemberController::class, 'updateMember']);
-    // Publish events
-    Route::put("/events/publish", [EventController::class, 'publishEvent']);
+    Route::get('analytics/', [EventController::class, 'organizerAnalytics']); 
 
-    //Task Management
-    Route::get('/events/tasks/{event_id}', [TaskController::class, 'tasks']);
-    Route::get('/tasks/details/{id}', [TaskController::class, 'tasksDetail']);
-    Route::post('/tasks/create', [TaskController::class, 'createTask']);
-    Route::put('/tasks/update', [TaskController::class, 'updateTask']);
-    Route::delete('/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
 
-    Route::put('/tasks/complete', [TaskController::class, 'completeTask']);
+
+    // //Members Management
+    // Route::get('/members', [MemberController::class, 'members']);
+    // Route::post('/members/add', [MemberController::class, 'addMember']);
+    // Route::delete('/members/delete/{id}', [MemberController::class, 'deleteMember']);
+    // Route::put('/members/update', [MemberController::class, 'updateMember']);
+    // // Publish events
+    // Route::put("/events/publish", [EventController::class, 'publishEvent']);
+
+    // //Task Management
+    // Route::get('/events/tasks/{event_id}', [TaskController::class, 'tasks']);
+    // Route::get('/tasks/details/{id}', [TaskController::class, 'tasksDetail']);
+    // Route::post('/tasks/create', [TaskController::class, 'createTask']);
+    // Route::put('/tasks/update', [TaskController::class, 'updateTask']);
+    // Route::delete('/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
+
+    // Route::put('/tasks/complete', [TaskController::class, 'completeTask']);
+
+
 
 
     
@@ -194,6 +199,33 @@ Route::group(['middleware' => ['auth:sanctum', 'role:organizer|OT']], function (
 
 
 
+Route::prefix('at')->middleware(['auth:sanctum', 'role:AT'])->group(function(){
+    Route::get('/assigned/events', [EventTeamAssignmentController::class, 'getEventsAssignedToUser']);
+});
+
+
+
+
+
+
+Route::middleware(['auth:sanctum', 'role:organizer|AT'])->group(function (){
+    //Members Management
+    Route::get('/members', [MemberController::class, 'members']);
+    Route::post('/members/add', [MemberController::class, 'addMember']);
+    Route::delete('/members/delete/{id}', [MemberController::class, 'deleteMember']);
+    Route::put('/members/update', [MemberController::class, 'updateMember']);
+    // Publish events
+    Route::put("/events/publish", [EventController::class, 'publishEvent']);
+
+    //Task Management
+    Route::get('/events/tasks/{event_id}', [TaskController::class, 'tasks']);
+    Route::get('/tasks/details/{id}', [TaskController::class, 'tasksDetail']);
+    Route::post('/tasks/create', [TaskController::class, 'createTask']);
+    Route::put('/tasks/update', [TaskController::class, 'updateTask']);
+    Route::delete('/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
+
+    Route::put('/tasks/complete', [TaskController::class, 'completeTask']);
+});
 
 
 
@@ -201,6 +233,14 @@ Route::group(['middleware' => ['auth:sanctum', 'role:organizer|OT']], function (
 
 
 
+
+
+
+
+
+
+
+// Route for payment verification using chapa
 Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');
 
 
@@ -209,7 +249,7 @@ Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
 
-Route::middleware('auth:sanctum')->get('team/assigned/events', [EventTeamAssignmentController::class, 'getEventsAssignedToUser']);
+
 
 
 

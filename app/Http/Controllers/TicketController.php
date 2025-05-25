@@ -79,6 +79,9 @@ class TicketController extends Controller
         return $response['data']['checkout_url'];
     }
 
+
+
+
     public function verifyPayment(Request $request)
     {
         $trx_ref = $request->query('trx_ref');
@@ -106,6 +109,10 @@ class TicketController extends Controller
 
         return 'Payment verification failed.';
     }
+
+
+
+
 
     protected function createTicket($user_id, $event_id, $trx_ref = null, $recipientData = null, $ticket_type = null)
     {
@@ -138,13 +145,15 @@ class TicketController extends Controller
 
 
 
+    
+
   public function userTicket()
 {
     $user = auth()->user();
 
     $tickets = Ticket::with(['event', 'recipient'])
         ->where('user_id', $user->id)
-        ->get()
+        ->get();
 
     return response()->json($tickets);
 }
