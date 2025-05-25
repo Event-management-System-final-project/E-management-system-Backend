@@ -46,4 +46,33 @@ class OrganizerController extends Controller
 
 
 
+    public function profileManagement(Request $request)
+    {
+       
+    
+        $validator = Validator::make($request->all(), [
+            'organization_name' => 'required|string',
+            'business_type' => 'required|string',
+            'description' => 'required|string',
+            'address' => 'required|string',
+            'event_categories' => 'required|string',
+            'years_of_experience' => 'required|string',
+            'portfolio' => 'required|string',
+            'bank_account_details' => 'required|string',
+            'verification_documents' => 'required|string',
+        ]);
+        $validator['user_id'] = auth()->user()->id;
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $organizer = Organizer::create($request->all());
+
+        return response()->json(['message' => 'Organizer created successfully', 'organizer' => $organizer], 201);
+
+    }
+
+
+
 }

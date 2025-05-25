@@ -25,12 +25,6 @@ return new class extends Migration
             $table->string("verification_documents");
             $table->timestamps();
 
-        
-        
-        
-        
-        
-        
         });
     }
 
