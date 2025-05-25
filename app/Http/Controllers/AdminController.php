@@ -66,14 +66,14 @@ class AdminController extends Controller
 
 
     public function eventRequests(){
-        $events = Event::where('approval_status', '!=', 'draft')->get();
+        $events = Event::with('organizer')->where('approval_status', '!=', 'draft')->get();
         $total = $events->count();
         $pending = $events->where('approval_status', 'pending')->count();
         $approved = $events->where('approval_status', 'approved')->count();
         $rejected = $events->where('approval_status', 'rejected')->count();
 
         $user = User::count();
-        $organizer = User::where('role', 'organizer')->count();
+        $organizer = User::role('organizer')->count();
         return response()->json([
            "events" => $events,
             "total" => $total,
@@ -85,6 +85,12 @@ class AdminController extends Controller
         ]);
 
     }
+
+
+
+
+
+
 
     public function approveEvent(Request $request){
         
