@@ -29,7 +29,7 @@ class UserController extends Controller
         }
 
         $user = User::create($formData);
-        $user->assignRole($formData['role']);
+        $user->assignRole($request->role);
 
        
 
@@ -58,12 +58,12 @@ class UserController extends Controller
     }
 
     // Now safe to access role
-    $role = explode('-', $user->role)[0];
-    $user->role = $role;
+    $role = $user->getRoleNames()->first();
 
     return response()->json([
         'token' =>  $user->createToken($user->firstName)->plainTextToken,
-        'user' => $user
+        'user' => $user,
+        'role' => $role,
     ], 200);
 }
 
