@@ -194,6 +194,9 @@ Route::group(['middleware' => ['auth:sanctum', 'role:organizer|OT']], function (
 
 
 
+Route::prefix('at')->middleware(['auth:sanctum', 'role:AT'])->group(function(){
+    Route::get('/assigned/events', [EventTeamAssignmentController::class, 'getEventsAssignedToUser']);
+});
 
 
 
@@ -201,6 +204,12 @@ Route::group(['middleware' => ['auth:sanctum', 'role:organizer|OT']], function (
 
 
 
+
+
+
+
+
+// Route for payment verification using chapa
 Route::get('payment/callback/', [TicketController::class, 'verifyPayment'])->name('payment.callback');
 
 
@@ -209,7 +218,7 @@ Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
 
-Route::middleware('auth:sanctum')->get('team/assigned/events', [EventTeamAssignmentController::class, 'getEventsAssignedToUser']);
+
 
 
 

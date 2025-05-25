@@ -56,16 +56,44 @@ class UserRequestController extends Controller
 
     
 
-    public function userRequestShow()
-    {
-        $user = auth()->user();
-        $events = Event::where('organizer_id', $user->id)->get();
+    // public function userRequestShow()
+    // {
+    //     $user = auth()->user();
+    //     $events = Event::where('organizer_id', $user->id)->get();
 
-        return [
-            'message' => "User requests retrieved successfully",
-            'events' => $events
-        ];
-    }
+    //     return [
+    //         'message' => "User requests retrieved successfully",
+    //         'events' => $events
+    //     ];
+    // }
+
+
+    public function userRequestShow()
+{
+    $user = auth()->user();
+    return Event::where('organizer_id', $user->id)
+        ->with(['payments' => function ($query) {
+            $query->select('related_id', 'status'); // Assuming 'related_id' is the foreign key in Payment
+        }])
+        ->get()
+        ->map(function ($event) {
+            $payment = $event->payments->first();
+            $event->payment_status = $payment ? $payment->status : 'unpaid';
+            return $event;
+        });
+}
+    // $events = Event::where('organizer_id', $user->id)->get()->map(function ($event) {
+    //     $payment = Payment::where('related_id', $event->id)->first();
+    //     $event->payment_status = $payment ? $payment->status : 'unpaid';
+    //     return $event;
+    // });
+
+    // return [
+    //     'message' => "User requests retrieved successfully",
+    //     'events' => $events
+    // ];
+
+
 
 
 
