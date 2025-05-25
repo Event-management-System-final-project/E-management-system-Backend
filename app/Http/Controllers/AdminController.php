@@ -204,13 +204,33 @@ class AdminController extends Controller
 
 
 
-    public function users(){
-        $users = User::where('id', '!=', auth()->user()->id)->get();
-        return response()->json([
-            'message' => "Users retrieved successfully",
-            'users' => $users
-        ]);
-    }
+    // public function users(){
+    //     $users = User::where('id', '!=', auth()->user()->id)->get();
+    //     return response()->json([
+    //         'message' => "Users retrieved successfully",
+    //         'users' => $users
+    //     ]);
+    // }
+
+public function users(){
+    $users = User::where('id', '!=', auth()->user()->id)->get()->map(function ($user) {
+        return [
+            'id' => $user->id,
+            'firstName' => $user->firstName,
+            'lastName' => $user->lastName,
+            'email' => $user->email,
+            'role' => $user->getRoleNames()->first(), // Get the first role
+            'joined_date' => $user->created_at, // Add the joined date
+        ];
+    });
+    return response()->json([
+        'message' => "Users retrieved successfully",
+        'users' => $users
+    ]);
+}
+
+
+
 
 
     public function addTeamMembers(Request $request){
