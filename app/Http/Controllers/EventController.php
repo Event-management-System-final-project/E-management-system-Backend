@@ -100,20 +100,6 @@ class EventController extends Controller
 
 
 
-    // UPLOADING A FILE
-    function uploadFile(Request $request){
-        $request->validate([
-            'file' => 'required|file'
-        ]);
-
-        $file = $request->file('file');
-        $filePath = $file->storeAs('uploads', 'public');
-
-        return [
-            "file" => $file,
-            "filePath" => $filePath
-        ];
-    }
 
 
 
@@ -326,6 +312,8 @@ class EventController extends Controller
         ]);
     }
 
+
+    
     // post events
     public function publishEvent(Request $request){
         $event = Event::where("id", $request->event_id)->first();
