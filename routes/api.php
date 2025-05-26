@@ -40,9 +40,6 @@ Route::post('/password/reset', [PasswordReset::class, 'resetPassword']);
 
 
 
-// test file upload
-Route::post('/upload', [EventController::class, 'uploadFile']);
-
 // Event search and filter
 Route::get("event/search/{keyword}", [EventController::class, 'eventSearch']);
 Route::get('/events/filter', [EventController::class, 'filterEvents']);
@@ -75,29 +72,6 @@ Route::prefix('organizer')->middleware(['auth:sanctum', 'role:organizer'])->grou
     // Dashboard Analytics
     Route::get('analytics/', [EventController::class, 'organizerAnalytics']); 
 
-
-
-    // //Members Management
-    // Route::get('/members', [MemberController::class, 'members']);
-    // Route::post('/members/add', [MemberController::class, 'addMember']);
-    // Route::delete('/members/delete/{id}', [MemberController::class, 'deleteMember']);
-    // Route::put('/members/update', [MemberController::class, 'updateMember']);
-    // // Publish events
-    // Route::put("/events/publish", [EventController::class, 'publishEvent']);
-
-    // //Task Management
-    // Route::get('/events/tasks/{event_id}', [TaskController::class, 'tasks']);
-    // Route::get('/tasks/details/{id}', [TaskController::class, 'tasksDetail']);
-    // Route::post('/tasks/create', [TaskController::class, 'createTask']);
-    // Route::put('/tasks/update', [TaskController::class, 'updateTask']);
-    // Route::delete('/tasks/delete/{id}', [TaskController::class, 'deleteTask']);
-
-    // Route::put('/tasks/complete', [TaskController::class, 'completeTask']);
-
-
-
-
-    
 
     // Subteam task showing
     Route::get('/subteam/tasks', [MemberController::class, 'assignedTasks']);
@@ -268,7 +242,7 @@ Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
 
 
 Route::get('/dashboard-summary', [App\Http\Controllers\Tst\EventController::class, 'summary'])->middleware('auth:sanctum');
-Route::get('/events', [App\Http\Controllers\Tst\EventController::class, 'index'])->middleware('auth:sanctum');
+// Route::get('/events', [App\Http\Controllers\Tst\EventController::class, 'index'])->middleware('auth:sanctum');
 
 
 

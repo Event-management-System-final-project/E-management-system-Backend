@@ -26,7 +26,7 @@ class MemberController extends Controller
 
         // Extracting the second part of the role
         $role = array_map(function ($item) {
-            return explode("-", $item)[1]; // Extract first part
+            return explode("-", $item)[0]; // Extract first part
         }, $roleData);
       
         // assigning the appropriate role to each memeber
