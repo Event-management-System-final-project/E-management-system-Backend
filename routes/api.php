@@ -18,7 +18,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Controllers\EventTeamAssignmentController;
 use App\Http\Controllers\QrCodeController;
-use App\Http\Controllers\TestController;
+use App\Http\Controllers\Tst\TestController;
 
 
 
@@ -252,6 +252,23 @@ Route::get('/event/monitoring', [AdminController::class, 'eventMonitor']);
 
 
 
+
+
+
+
+Route::prefix('analytics')->middleware('auth:sanctum')->group(function () {
+    Route::get('/metrics', [TestController::class, 'getMetrics']);
+    Route::get('/charts', [TestController::class, 'getCharts']);
+    Route::get('/top-events', [TestController::class, 'getTopEvents']);
+    Route::get('/satisfaction', [TestController::class, 'getSatisfaction']);
+    Route::get('/categories', [TestController::class, 'getCategoryPerformance']);
+    // Route::post('/export', [TestController::class, 'exportReport']);
+});
+
+
+
+Route::get('/dashboard-summary', [App\Http\Controllers\Tst\EventController::class, 'summary'])->middleware('auth:sanctum');
+Route::get('/events', [App\Http\Controllers\Tst\EventController::class, 'index'])->middleware('auth:sanctum');
 
 
 

@@ -31,5 +31,13 @@ class Ticket extends Model
     {
         return $this->hasMany(TicketRecipient::class);
     }
+
+    public function payment()
+    {
+        // Payment.related_id is the ticket_id when purpose = 'ticket'
+        return $this->hasOne(Payment::class, 'related_id')
+                    ->where('purpose', 'ticket');
+    }
+
     
 }
