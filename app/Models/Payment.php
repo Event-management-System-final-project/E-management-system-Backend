@@ -31,6 +31,12 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class,'related_id');
+    }
+
+
     // // Optional helper for dynamic related model
     // public function related()
     // {

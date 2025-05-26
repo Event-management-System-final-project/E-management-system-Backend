@@ -99,6 +99,15 @@ class MemberController extends Controller
 
     }
 
+
+
+
+
+
+
+
+
+
     // FUNCTION TO UPDATE A MEMBER
     public function updateMember(Request $request)
     {
@@ -146,6 +155,14 @@ class MemberController extends Controller
     }
 
 
+
+
+
+
+
+
+
+    
 
     // FUNCTION TO DELETE A MEMBER
     public function deleteMember($id)

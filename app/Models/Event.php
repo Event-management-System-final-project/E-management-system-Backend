@@ -62,4 +62,7 @@ public function payments()
     return $this->hasMany(Payment::class, 'related_id');
 }
 
+
+
+
 }
